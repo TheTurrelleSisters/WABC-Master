@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0a0010">
+  <meta name="apple-mobile-web-app-title" content="WABC">
+  <link rel="manifest" href="manifest.json">
+  <title>WABC — Wide Area Ball Caller</title>
+<style>
+:root {
+  --gold:    #ffd700;
+  --gold-dk: #b8860b;
+  --green:   #00ff88;
+  --blue:    #00cfff;
+  --blue-dk: #007799;
+  --bg:      #0a0010;
+  --bg2:     #140025;
+  --bg3:     #1e003a;
+  --border:  #3a006a;
+  --text:    #e8d8ff;
+  --dim:     #886699;
+  --danger:  #ff2244;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: Arial, sans-serif; overflow: hidden; }
+
+/* ── SPLASH ── */
+#splash {
+  position: fixed; inset: 0; z-index: 9999;
+  background: radial-gradient(ellipse at center, #001a30 0%, #05000f 70%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  transition: opacity .8s ease;
+}
+#splash::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px,
+    rgba(0,0,0,.12) 3px, rgba(0,0,0,.12) 4px);
+}
+.star { position: absolute; border-radius: 50%; background: #ffd700;
+  animation: twinkle var(--d) ease-in-out infinite var(--delay); }
+@keyframes twinkle { 0%,100%{opacity:.2;transform:scale(.8)} 50%{opacity:1;transform:scale(1.2)} }
+
+#gear-wrap { position: relative; margin-bottom: 16px; }
+#gear-img {
+  width: 110px; height: 110px;
+  animation: gear-spin 8s linear infinite;
+  filter: drop-shadow(0 0 16px rgba(0,207,255,.6)) drop-shadow(0 0 32px rgba(0,150,255,.3));
+}
+@keyframes gear-spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+#gear-ring {
+  position: absolute; inset: -12px; border-radius: 50%;
+  border: 2px solid rgba(0,207,255,.3);
+  animation: ring-pulse 2s ease-in-out infinite;
+}
+#gear-ring2 {
+  position: absolute; inset: -24px; border-radius: 50%;
+  border: 1px solid rgba(0,207,255,.15);
+  animation: ring-pulse 2s ease-in-out infinite .5s;
+}
+@keyframes ring-pulse { 0%,100%{transform:scale(1);opacity:.4} 50%{transform:scale(1.08);opacity:.9} }
+
+#splash-title { font-size: clamp(11px,3.5vw,16px); letter-spacing: 4px; color: #00aaff;
+  text-transform: uppercase; text-shadow: 0 0 8px #0066ff; margin-bottom: 4px; }
+#splash-name { font-size: clamp(22px,7vw,32px); font-weight: 900; color: var(--blue);
+  text-align: center; line-height: 1.15; letter-spacing: 2px;
+  text-shadow: 0 0 12px #0088ff, 0 0 24px #0044ff; margin-bottom: 6px; }
+#splash-sub { font-size: clamp(9px,2.5vw,12px); letter-spacing: 3px; color: #334466;
+  text-transform: uppercase; margin-bottom: 28px; }
+
+#loading-wrap { width: 180px; margin-bottom: 12px; }
+#loading-track { height: 3px; background: rgba(0,207,255,.15); border-radius: 2px; overflow: hidden; }
+#loading-bar {
+  height: 100%; width: 0%; background: linear-gradient(90deg, #0044ff, #00cfff);
+  border-radius: 2px;
+  animation: load-fill 2.2s cubic-bezier(.4,0,.2,1) forwards .3s;
+  box-shadow: 0 0 8px #00cfff;
+}
+@keyframes load-fill { from{width:0%} to{width:100%} }
+#loading-text {
+  text-align: center; font-size: 8px; color: #223355; letter-spacing: 2px;
+  margin-top: 6px; text-transform: uppercase;
+  animation: blink .8s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:.4} 50%{opacity:1} }
+#splash-ver { position: absolute; bottom: 14px; font-size: 9px; color: #1a2244;
+  letter-spacing: 2px; }
+
+/* ── LOCK SCREEN ── */
+#lock-screen {
+  position: fixed; inset: 0; background: var(--bg);
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 10000; gap: 16px;
+}
+#lock-title  { font-size: 13px; letter-spacing: 3px; color: var(--blue); text-transform: uppercase; }
+#lock-logo   { font-size: 28px; font-weight: 900; color: var(--blue);
+  text-shadow: 0 0 12px #0088ff; letter-spacing: 2px; text-align: center; line-height: 1.2; }
+#lock-sub    { font-size: 10px; color: var(--dim); letter-spacing: 2px; }
+#pin-dots    { display: flex; gap: 10px; margin: 8px 0; }
+.pin-dot     { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--blue-dk);
+  background: transparent; transition: background .15s; }
+.pin-dot.filled { background: var(--blue); }
+#pin-error   { color: var(--danger); font-size: 11px; height: 14px; }
+#username-field {
+  width: 200px; padding: 10px 12px; background: #0a0d1a;
+  border: 1.5px solid var(--blue-dk); border-radius: 8px;
+  color: var(--blue); font-size: 13px; text-align: center; outline: none; letter-spacing: 1px;
+}
+#username-field::placeholder { color: var(--dim); letter-spacing: 1px; }
+#username-field:focus { border-color: var(--blue); }
+#pin-grid  { display: grid; grid-template-columns: repeat(3, 64px); gap: 10px; }
+.pkey {
+  height: 56px; border-radius: 10px; border: 1.5px solid var(--border);
+  background: var(--bg2); color: var(--text); font-size: 20px; font-weight: bold;
+  cursor: pointer; transition: background .1s, transform .08s;
+  display: flex; align-items: center; justify-content: center;
+}
+.pkey:active { background: var(--bg3); transform: scale(.94); }
+.pkey.wide   { grid-column: span 2; font-size: 13px; letter-spacing: 1px; color: var(--dim); }
+.pkey.enter  { background: linear-gradient(135deg,#00001a,#000066); color: var(--blue); font-size: 13px; }
+
+/* ── APP ── */
+#app { display: none; flex-direction: column; height: 100%; }
+#app.visible { display: flex; }
+
+/* ── HEADER ── */
+#app-hdr {
+  background: linear-gradient(135deg, #0a0010, #001a30);
+  border-bottom: 1.5px solid var(--blue-dk);
+  padding: 10px 14px 8px; flex-shrink: 0;
+}
+#app-hdr-top { display: flex; justify-content: space-between; align-items: center; }
+#app-title   { font-size: 11px; letter-spacing: 2px; color: var(--blue); text-transform: uppercase; }
+#conn-badge  { font-size: 9px; padding: 2px 8px; border-radius: 10px; letter-spacing: 1px; }
+#conn-badge.ok  { background: #001a33; color: var(--blue); border: 1px solid #004477; }
+#conn-badge.err { background: #330000; color: var(--danger); border: 1px solid #660000; }
+
+/* ── BALL HEADER ── */
+#ball-header {
+  background: linear-gradient(135deg, #00001a, #001a33);
+  border-bottom: 1px solid #0044aa;
+  padding: 8px 14px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+#ball-lbl    { font-size: 9px; color: #4488cc; letter-spacing: 2px; text-transform: uppercase; }
+#ball-num    { font-size: 36px; font-weight: 900; color: var(--blue);
+  font-family: 'Arial Black', Arial, sans-serif;
+  text-shadow: 0 0 12px #0088ff; line-height: 1; }
+#ball-meta   { font-size: 9px; color: var(--dim); text-align: right; }
+#conn-status-msg { font-size: 12px; font-weight: 700; letter-spacing: 1px; color: #4488cc;
+  text-align: center; padding: 2px 0; min-height: 18px; transition: opacity .4s; }
+#conn-status-msg.connecting  { color: #ffaa00; }
+#conn-status-msg.connected   { color: var(--blue); }
+
+/* ── TABS ── */
+#tab-bar { display: flex; border-bottom: 1.5px solid var(--border);
+  background: var(--bg2); flex-shrink: 0; }
+.tab {
+  flex: 1; padding: 10px 4px; text-align: center; font-size: 10px;
+  letter-spacing: 1px; text-transform: uppercase; color: var(--dim);
+  cursor: pointer; border-bottom: 2px solid transparent; transition: all .15s;
+}
+.tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+/* ── CONTENT ── */
+#tab-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 14px; }
+
+/* ── SECTIONS ── */
+.section { margin-bottom: 18px; }
+.sec-title {
+  font-size: 9px; letter-spacing: 2px; color: var(--blue-dk);
+  text-transform: uppercase; margin-bottom: 8px; padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+.row { display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0; border-bottom: 1px solid #001a33; }
+.row:last-child { border-bottom: none; }
+.row-lbl { font-size: 12px; color: var(--text); }
+.row-sub { font-size: 9px; color: var(--dim); margin-top: 2px; }
+.row-val { font-size: 14px; color: var(--blue); font-weight: bold; }
+
+/* ── BUTTONS ── */
+.btn {
+  padding: 10px 16px; border-radius: 8px; border: none; font-size: 11px;
+  font-weight: bold; letter-spacing: 1px; text-transform: uppercase;
+  cursor: pointer; transition: transform .08s, opacity .1s;
+}
+.btn:active { transform: scale(.94); opacity: .85; }
+.btn-blue    { background: linear-gradient(135deg,#00001a,#002266); color: var(--blue); border: 1px solid var(--blue-dk); }
+.btn-green   { background: linear-gradient(135deg,#003a00,#006600); color: var(--green); border: 1px solid #00aa44; }
+.btn-danger  { background: linear-gradient(135deg,#3a0010,#660022); color: var(--danger); border: 1px solid #aa0033; }
+.btn-gold    { background: linear-gradient(135deg,#3a2800,#886600); color: var(--gold); border: 1px solid var(--gold-dk); }
+.btn-full    { width: 100%; margin-top: 8px; padding: 12px; font-size: 12px; }
+
+/* ── STATS GRID ── */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px; text-align: center; }
+.stat-val  { font-size: 20px; font-weight: 900; color: var(--blue); }
+.stat-lbl  { font-size: 9px; color: var(--dim); letter-spacing: 1px; margin-top: 2px; }
+
+/* ── BALL GRID ── */
+.ball-cell {
+  width: 30px; height: 24px; border-radius: 3px;
+  font-size: 9px; font-weight: 400;
+  display: inline-flex; align-items: center; justify-content: center; margin: 1px;
+}
+
+/* ── BROADCAST BANNER ── */
+#broadcast-banner {
+  display: none; margin: 0 0 10px 0;
+  background: linear-gradient(135deg, #001a00, #003300);
+  border: 2px solid var(--green); border-radius: 10px; padding: 10px 14px;
+  animation: bc-pulse 1.5s ease-in-out infinite;
+}
+#broadcast-banner.show { display: block; }
+@keyframes bc-pulse {
+  0%,100% { border-color: var(--green); box-shadow: 0 0 6px rgba(0,255,136,.3); }
+  50%      { border-color: #00ffaa;     box-shadow: 0 0 16px rgba(0,255,136,.6); }
+}
+#bc-title { font-size: 11px; font-weight: 900; color: var(--green); letter-spacing: 2px; margin-bottom: 4px; }
+#bc-body  { font-size: 13px; color: #ccffee; line-height: 1.4; }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: #001a33; border: 1.5px solid var(--blue-dk); border-radius: 20px;
+  padding: 8px 20px; font-size: 12px; color: var(--blue);
+  transition: transform .3s ease; z-index: 999; pointer-events: none; white-space: nowrap;
+}
+#toast.on { transform: translateX(-50%) translateY(0); }
+</style>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('service-worker.js').catch(function(e) { console.warn(e); });
+  });
+}
+</script>
+</head>
+<body>
+
+<!-- ══ SPLASH ══ -->
+<div id="splash">
+  <div class="star" style="width:2px;height:2px;top:8%;left:12%;--d:2.1s;--delay:0s"></div>
+  <div class="star" style="width:3px;height:3px;top:15%;left:75%;--d:3.4s;--delay:.3s"></div>
+  <div class="star" style="width:2px;height:2px;top:22%;left:45%;--d:2.8s;--delay:.8s"></div>
+  <div class="star" style="width:3px;height:3px;top:35%;left:88%;--d:2.2s;--delay:.1s"></div>
+  <div class="star" style="width:2px;height:2px;top:55%;left:5%;--d:3.1s;--delay:.6s"></div>
+  <div class="star" style="width:4px;height:4px;top:72%;left:20%;--d:2.6s;--delay:.4s"></div>
+  <div class="star" style="width:2px;height:2px;top:80%;left:60%;--d:2.9s;--delay:.9s"></div>
+  <div class="star" style="width:3px;height:3px;top:10%;left:55%;--d:3.3s;--delay:.2s"></div>
+
+  <!-- Bingo Ball SVG instead of gear -->
+  <div id="gear-wrap">
+    <div id="gear-ring"></div>
+    <div id="gear-ring2"></div>
+    <svg id="gear-img" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="44" fill="#001133" stroke="#00cfff" stroke-width="3"/>
+      <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(0,207,255,.2)" stroke-width="8"/>
+      <circle cx="50" cy="50" r="20" fill="#00001a" stroke="#00cfff" stroke-width="2"/>
+      <text x="50" y="56" text-anchor="middle" font-size="18" font-weight="900"
+        font-family="Arial Black,Arial,sans-serif" fill="#00cfff">75</text>
+      <!-- Stripes -->
+      <path d="M10 35 Q50 28 90 35" fill="none" stroke="#00cfff" stroke-width="1.5" opacity=".4"/>
+      <path d="M10 65 Q50 72 90 65" fill="none" stroke="#00cfff" stroke-width="1.5" opacity=".4"/>
+    </svg>
+  </div>
+
+  <div id="splash-title">Stray-Pup LLC</div>
+  <div id="splash-name">WIDE AREA<br>BALL CALLER</div>
+  <div id="splash-sub">Gold Coins Casino</div>
+
+  <div id="loading-wrap">
+    <div id="loading-track"><div id="loading-bar"></div></div>
+    <div id="loading-text" id="loading-text">Connecting&hellip;</div>
+  </div>
+
+  <div id="splash-ver">v1.0</div>
+</div>
+
+<!-- ══ LOCK SCREEN ══ -->
+<script>
+(function() {
+  var done = false;
+  window.killSplash = function() {
+    if (done) return; done = true;
+    var sp = document.getElementById('splash');
+    if (!sp) return;
+    sp.style.cssText += ';pointer-events:none!important;touch-action:none!important;z-index:-999!important;opacity:0;transition:opacity 0.6s';
+    setTimeout(function() {
+      sp.style.display = 'none';
+      var ls = document.getElementById('lock-screen');
+      if (ls) ls.style.display = 'flex';
+    }, 650);
+  };
+  setTimeout(window.killSplash, 10000);
+}());
+</script>
+
+<div id="lock-screen">
+  <div id="lock-title">Stray-Pup LLC</div>
+  <div id="lock-logo">WIDE AREA<br>BALL CALLER</div>
+  <div id="lock-sub">ENTER USERNAME &amp; PIN</div>
+  <input id="username-field" type="text" placeholder="Your name" maxlength="24"
+    autocomplete="off" spellcheck="false">
+  <div id="pin-dots">
+    <div class="pin-dot" id="d0"></div>
+    <div class="pin-dot" id="d1"></div>
+    <div class="pin-dot" id="d2"></div>
+    <div class="pin-dot" id="d3"></div>
+  </div>
+  <div id="pin-error"></div>
+  <div id="pin-grid">
+    <button class="pkey" onclick="pk('1')">1</button>
+    <button class="pkey" onclick="pk('2')">2</button>
+    <button class="pkey" onclick="pk('3')">3</button>
+    <button class="pkey" onclick="pk('4')">4</button>
+    <button class="pkey" onclick="pk('5')">5</button>
+    <button class="pkey" onclick="pk('6')">6</button>
+    <button class="pkey" onclick="pk('7')">7</button>
+    <button class="pkey" onclick="pk('8')">8</button>
+    <button class="pkey" onclick="pk('9')">9</button>
+    <button class="pkey wide" onclick="pkClear()">CLEAR</button>
+    <button class="pkey" onclick="pk('0')">0</button>
+    <button class="pkey enter" onclick="pkEnter()">OK</button>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ══ -->
+<div id="app">
+  <div id="app-hdr">
+    <div id="app-hdr-top">
+      <div id="app-title">&#127922; WABC</div>
+      <div id="conn-badge" class="err">OFFLINE</div>
+    </div>
+    <div id="conn-status-msg" class="connecting">Connecting&hellip;</div>
+  </div>
+
+  <!-- Live ball readout strip -->
+  <div id="ball-header">
+    <div>
+      <div id="ball-lbl">&#9679; NEXT BALL</div>
+      <div id="ball-num">&#8212;</div>
+    </div>
+    <div style="text-align:center">
+      <div id="ball-lbl" style="font-size:9px;color:#4488cc;letter-spacing:2px;text-transform:uppercase">POSITION</div>
+      <div id="ball-pos-display" style="font-size:26px;font-weight:900;color:var(--gold);font-family:'Arial Black',Arial,sans-serif">0/75</div>
+    </div>
+    <div id="ball-meta">
+      <div id="players-count" style="color:var(--green);font-size:11px;font-weight:bold">0 players</div>
+      <div id="sequence-issued" style="font-size:9px;color:var(--dim);margin-top:2px">&#8212;</div>
+    </div>
+  </div>
+
+  <div id="tab-bar">
+    <div class="tab active" onclick="showTab('caller')">&#127922; Caller</div>
+    <div class="tab" onclick="showTab('status')">Status</div>
+    <div class="tab" onclick="showTab('controls')">Controls</div>
+  </div>
+
+  <div id="tab-content"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   WABC — Wide Area Ball Caller
+   Stray-Pup LLC / The Turrelle Sisters LLC
+   v1.0
+   ══════════════════════════════════════════════════════════════════════ */
+
+var SUPABASE_URL      = 'https://gdmmoeggkqsvqnqyrubx.supabase.co';
+var SUPABASE_ANON_KEY = 'sb_publishable_NGsKBAUUsVUvD5XKTblIdw_aBDPldSd';
+var WABC_PIN          = '7777'; /* Change to your preferred PIN */
+
+/* ── State ── */
+var _client          = null;
+var _connected       = false;
+var _operatorName    = 'operator';
+var _pinBuf          = '';
+var _activeTab       = 'caller';
+
+/* Ball call state */
+var _sequence        = [];   /* 75-element array */
+var _ballPos         = 0;    /* current position 0-74 */
+var _issuedAt        = null;
+var _isForced        = false; /* true = all clients on local ball call */
+
+/* Presence */
+var _presenceState   = {};
+var _presenceCh      = null;
+
+/* Channels */
+var _broadcastCh     = null; /* Supabase Broadcast channel for ball pos */
+var _commandsCh      = null; /* postgres_changes on progressive_commands */
+
+/* Audit log */
+var _auditLog        = [];
+
+/* ══════════════════════════════════════════════════════════════════════
+   PIN
+   ══════════════════════════════════════════════════════════════════════ */
+function pk(d) {
+  if (_pinBuf.length >= 4) return;
+  _pinBuf += d;
+  updateDots();
+  if (_pinBuf.length === 4) setTimeout(pkEnter, 80);
+}
+function pkClear() {
+  _pinBuf = ''; updateDots();
+  document.getElementById('pin-error').textContent = '';
+}
+function pkEnter() {
+  var usernameEl = document.getElementById('username-field');
+  var username   = usernameEl ? usernameEl.value.trim() : '';
+  if (!username) {
+    document.getElementById('pin-error').textContent = 'Enter your name first';
+    _pinBuf = ''; updateDots(); return;
+  }
+  if (_pinBuf === WABC_PIN) {
+    _operatorName = username;
+    document.getElementById('lock-screen').style.display = 'none';
+    var titleEl = document.getElementById('app-title');
+    if (titleEl) titleEl.textContent = '\u127922 WABC \u2014 ' + username;
+    document.getElementById('app').classList.add('visible');
+    _activeTab = 'caller';
+    renderTab();
+    _updatePlayerCount();
+  } else {
+    document.getElementById('pin-error').textContent = 'Incorrect PIN';
+    _pinBuf = ''; updateDots();
+  }
+}
+function updateDots() {
+  for (var i = 0; i < 4; i++) {
+    document.getElementById('d' + i).classList.toggle('filled', i < _pinBuf.length);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   SPLASH STATUS
+   ══════════════════════════════════════════════════════════════════════ */
+function _setSplashStatus(msg, color) {
+  var el = document.getElementById('loading-text');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = color || '';
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   SUPABASE INIT
+   ══════════════════════════════════════════════════════════════════════ */
+function initSupabase() {
+  _setSplashStatus('Loading database SDK\u2026', '#ffaa00');
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.0/dist/umd/supabase.min.js';
+  s.onload = function() {
+    try {
+      _setSplashStatus('Connecting\u2026', '#ffaa00');
+      _client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      _fetchBallCallState(function() {
+        _connected = true;
+        _setSplashStatus('Connected \u2713', '#00cfff');
+        document.getElementById('conn-badge').className = 'ok';
+        document.getElementById('conn-badge').textContent = 'LIVE';
+        setConnStatus('connected');
+        _subscribeBroadcast();
+        _subscribePresence();
+        _subscribeCommands();
+        setTimeout(function() {
+          if (typeof window.killSplash === 'function') window.killSplash();
+        }, 800);
+      });
+    } catch(e) {
+      _setSplashStatus('Init error: ' + e.message, '#ff3300');
+      setTimeout(initSupabase, 5000);
+    }
+  };
+  s.onerror = function() {
+    _setSplashStatus('SDK load failed \u2014 retrying\u2026', '#ff3300');
+    setTimeout(initSupabase, 5000);
+  };
+  document.head.appendChild(s);
+}
+initSupabase();
+
+function setConnStatus(state) {
+  var el = document.getElementById('conn-status-msg');
+  if (!el) return;
+  el.className = state;
+  if (state === 'connecting')  { el.textContent = 'Connecting\u2026 Stand by'; }
+  else if (state === 'connected') {
+    el.textContent = 'Connected \u2713';
+    setTimeout(function() {
+      el.style.opacity = '0';
+      setTimeout(function() { el.style.display = 'none'; el.style.opacity = '1'; }, 500);
+    }, 2000);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   BALL CALL DB FETCH
+   ══════════════════════════════════════════════════════════════════════ */
+function _fetchBallCallState(cb) {
+  if (!_client) { if (cb) cb(); return; }
+  _client.from('ball_call')
+    .select('sequence, ball_pos, issued_at')
+    .eq('game_id', 'WABC')
+    .single()
+    .then(function(res) {
+      if (res.error) {
+        /* Row may not exist yet — seed it */
+        _client.rpc('upsert_ball_call', { p_game_id: 'WABC' }).then(function(r2) {
+          if (!r2.error && r2.data) {
+            _sequence  = r2.data.sequence  || [];
+            _ballPos   = r2.data.ball_pos  || 0;
+            _issuedAt  = r2.data.issued_at || new Date().toISOString();
+          }
+          if (cb) cb();
+        });
+        return;
+      }
+      _sequence = res.data.sequence  || [];
+      _ballPos  = res.data.ball_pos  || 0;
+      _issuedAt = res.data.issued_at || null;
+      _updateBallHeader();
+      if (cb) cb();
+    });
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   BROADCAST CHANNEL — ball pos updates (replaces postgres_changes writes)
+   Channel: wabc-ballpos
+   Game clients send: { type: 'pos', pos: N, seq_issued_at: '...' }
+   Operator sends:    { type: 'new_call', sequence: [...], issued_at: '...' }
+                      { type: 'reset_pos' }
+                      { type: 'force_local' }
+                      { type: 'restore_wide', sequence: [...], issued_at: '...' }
+   ══════════════════════════════════════════════════════════════════════ */
+function _subscribeBroadcast() {
+  if (_broadcastCh) {
+    try { _client.removeChannel(_broadcastCh); } catch(e) {}
+  }
+  _broadcastCh = _client.channel('wabc-ballpos', {
+    config: { broadcast: { self: false } }
+  });
+
+  _broadcastCh
+    .on('broadcast', { event: 'pos' }, function(msg) {
+      if (!msg || !msg.payload) return;
+      var p = msg.payload;
+      /* Accept pos update only if it matches our current sequence */
+      if (p.seq_issued_at && _issuedAt && p.seq_issued_at !== _issuedAt) return;
+      _ballPos = parseInt(p.pos, 10) || 0;
+      _updateBallHeader();
+      if (_activeTab === 'caller') renderTab();
+    })
+    .on('broadcast', { event: 'new_call' }, function(msg) {
+      if (!msg || !msg.payload) return;
+      var p = msg.payload;
+      _sequence = p.sequence || [];
+      _ballPos  = 0;
+      _issuedAt = p.issued_at || new Date().toISOString();
+      _updateBallHeader();
+      toast('\u25b6 New 75-ball sequence issued');
+      if (_activeTab === 'caller') renderTab();
+    })
+    .on('broadcast', { event: 'reset_pos' }, function() {
+      _ballPos = 0;
+      _updateBallHeader();
+      toast('\u21bb Ball position reset to 0');
+      if (_activeTab === 'caller') renderTab();
+    })
+    .on('broadcast', { event: 'force_local' }, function() {
+      _isForced = true;
+      toast('\u26a0 Wide area ball call — LOCAL mode active');
+      if (_activeTab === 'caller' || _activeTab === 'controls') renderTab();
+    })
+    .on('broadcast', { event: 'restore_wide' }, function(msg) {
+      _isForced = false;
+      if (msg && msg.payload && msg.payload.sequence) {
+        _sequence = msg.payload.sequence;
+        _ballPos  = 0;
+        _issuedAt = msg.payload.issued_at || new Date().toISOString();
+        _updateBallHeader();
+      }
+      toast('\u2714 Wide area ball call restored');
+      if (_activeTab === 'caller' || _activeTab === 'controls') renderTab();
+    })
+    .subscribe(function(status) {
+      if (status === 'SUBSCRIBED') {
+        console.log('[WABC] Broadcast channel connected');
+      }
+      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+        console.warn('[WABC] Broadcast channel ' + status + ' — reconnecting in 3s');
+        setTimeout(_subscribeBroadcast, 3000);
+      }
+    });
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   PRESENCE — shared with progressive controller
+   ══════════════════════════════════════════════════════════════════════ */
+function _subscribePresence() {
+  var sessionKey = 'wabc_' + Math.random().toString(36).substr(2, 9);
+  _presenceCh = _client.channel('presence-lobby', {
+    config: { presence: { key: sessionKey } }
+  });
+  function _sync() {
+    var state = _presenceCh.presenceState();
+    _presenceState = {};
+    Object.keys(state).forEach(function(k) {
+      var entries = state[k];
+      if (entries && entries.length > 0) {
+        _presenceState[k] = entries[0];
+      }
+    });
+    _updatePlayerCount();
+    if (_activeTab === 'caller' || _activeTab === 'status') renderTab();
+  }
+  _presenceCh
+    .on('presence', { event: 'sync' },  _sync)
+    .on('presence', { event: 'join' },  _sync)
+    .on('presence', { event: 'leave' }, _sync)
+    .subscribe(function(status) {
+      if (status === 'SUBSCRIBED') {
+        _presenceCh.track({
+          gameId: 'wabc_operator',
+          joinedAt: new Date().toISOString(),
+          lastSpin: null
+        });
+      }
+    });
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   COMMANDS — postgres_changes for force_local_ball / restore_wide_ball
+   (these are operator-level commands written to progressive_commands;
+    we still listen for them here so WABC tracks forced/restored state)
+   ══════════════════════════════════════════════════════════════════════ */
+function _subscribeCommands() {
+  _commandsCh = _client.channel('wabc-commands')
+    .on('postgres_changes', {
+      event: 'INSERT', schema: 'public', table: 'progressive_commands'
+    }, function(p) {
+      if (!p.new) return;
+      if (p.new.command === 'force_local_ball' && p.new.winner_game === 'WABC') {
+        _isForced = true;
+        if (_activeTab === 'controls' || _activeTab === 'caller') renderTab();
+      }
+      if (p.new.command === 'restore_wide_ball' && p.new.winner_game === 'WABC') {
+        _isForced = false;
+        if (_activeTab === 'controls' || _activeTab === 'caller') renderTab();
+      }
+    })
+    .subscribe();
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   HEADER UPDATERS
+   ══════════════════════════════════════════════════════════════════════ */
+function _updateBallHeader() {
+  var nextBall  = (_sequence && _ballPos < _sequence.length) ? _sequence[_ballPos] : '\u2014';
+  var posStr    = _ballPos + ' / 75';
+  var remaining = _sequence.length - _ballPos;
+  var issuedStr = _issuedAt ? new Date(_issuedAt).toLocaleTimeString() : '\u2014';
+
+  var ballNumEl = document.getElementById('ball-num');
+  if (ballNumEl) ballNumEl.textContent = nextBall;
+
+  var posEl = document.getElementById('ball-pos-display');
+  if (posEl) posEl.textContent = posStr;
+
+  var metaEl = document.getElementById('sequence-issued');
+  if (metaEl) metaEl.textContent = 'Issued: ' + issuedStr + ' \u00b7 ' + remaining + ' left';
+}
+
+function _updatePlayerCount() {
+  var count = 0;
+  Object.keys(_presenceState).forEach(function(k) {
+    var p = _presenceState[k];
+    if (p && p.gameId !== 'operator' && p.gameId !== 'wabc_operator') count++;
+  });
+  var el = document.getElementById('players-count');
+  if (el) el.textContent = count + (count === 1 ? ' player' : ' players');
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   TAB ROUTING
+   ══════════════════════════════════════════════════════════════════════ */
+function showTab(name) {
+  _activeTab = name;
+  var tabs = document.querySelectorAll('.tab');
+  var tabNames = ['caller', 'status', 'controls'];
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.toggle('active', tabNames[i] === name);
+  }
+  if (name === 'caller')   renderTab();
+  if (name === 'status')   renderTab();
+  if (name === 'controls') renderTab();
+}
+
+function renderTab() {
+  var el = document.getElementById('tab-content');
+  if (!el) return;
+  if      (_activeTab === 'caller')   el.innerHTML = renderCaller();
+  else if (_activeTab === 'status')   el.innerHTML = renderStatus();
+  else if (_activeTab === 'controls') el.innerHTML = renderControls();
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   RENDER — CALLER TAB
+   ══════════════════════════════════════════════════════════════════════ */
+function renderCaller() {
+  var seq       = _sequence;
+  var pos       = _ballPos;
+  var nextBall  = seq && pos < seq.length ? seq[pos] : '\u2014';
+  var remaining = seq ? (seq.length - pos) : '\u2014';
+  var issued    = _issuedAt ? new Date(_issuedAt).toLocaleTimeString() : '\u2014';
+
+  /* Player counts per game */
+  var byGame = {};
+  var totalPlayers = 0;
+  Object.keys(_presenceState).forEach(function(k) {
+    var p = _presenceState[k];
+    if (!p || p.gameId === 'operator' || p.gameId === 'wabc_operator') return;
+    byGame[p.gameId] = (byGame[p.gameId] || 0) + 1;
+    totalPlayers++;
+  });
+  var breakdown = Object.keys(byGame).map(function(g) {
+    return _gameName(g) + ': ' + byGame[g];
+  }).join(' &bull; ') || 'No players connected';
+
+  var forceWarning = _isForced
+    ? '<div style="background:#2a1000;border:1px solid #ff8800;border-radius:6px;padding:8px 10px;margin-bottom:10px;font-size:11px;color:#ff8800">&#9888; LOCAL MODE — players are using local ball calls. Wide area sequence is paused.</div>'
+    : '';
+
+  return '<div class="section">' +
+    '<div class="sec-title">&#127922; Wide Area Ball Caller</div>' +
+    forceWarning +
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">' +
+      '<div class="stat-card">' +
+        '<div style="font-size:8px;color:var(--dim);letter-spacing:1px;margin-bottom:4px">NEXT BALL</div>' +
+        '<div style="font-size:36px;font-weight:900;color:var(--blue);font-family:\'Arial Black\',Arial,sans-serif;line-height:1">' + nextBall + '</div>' +
+      '</div>' +
+      '<div class="stat-card">' +
+        '<div style="font-size:8px;color:var(--dim);letter-spacing:1px;margin-bottom:4px">POSITION</div>' +
+        '<div style="font-size:22px;font-weight:900;color:var(--gold);font-family:\'Arial Black\',Arial,sans-serif;line-height:1">' + pos + '<span style="font-size:11px;color:var(--dim)">/75</span></div>' +
+      '</div>' +
+      '<div class="stat-card">' +
+        '<div style="font-size:8px;color:var(--dim);letter-spacing:1px;margin-bottom:4px">REMAINING</div>' +
+        '<div style="font-size:22px;font-weight:900;color:#ffd700;font-family:\'Arial Black\',Arial,sans-serif;line-height:1">' + remaining + '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div style="font-size:10px;color:var(--dim);margin-bottom:6px">&#128100; ' + totalPlayers + ' connected &bull; ' + breakdown + '</div>' +
+    '<div style="font-size:9px;color:var(--dim);margin-bottom:4px">Issued: ' + issued + '</div>' +
+    /* Legend */
+    '<div style="font-size:8px;color:var(--dim);letter-spacing:1px;margin-bottom:4px">' +
+      '<span style="color:#ffdd00">&#9632;</span> PRE-CALLED (1-40) &nbsp;' +
+      '<span style="color:#ffffff">&#9632;</span> ENTERTAINMENT (41-75)' +
+    '</div>' +
+    _renderBallGrid(seq, pos) +
+  '</div>';
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   RENDER — STATUS TAB
+   ══════════════════════════════════════════════════════════════════════ */
+function renderStatus() {
+  var rows = '';
+  var now  = Date.now();
+  Object.keys(_presenceState).forEach(function(k) {
+    var p = _presenceState[k];
+    if (!p || p.gameId === 'operator' || p.gameId === 'wabc_operator') return;
+    var lastSpin = p.lastSpin ? new Date(p.lastSpin).getTime() : 0;
+    var secs     = lastSpin ? Math.floor((now - lastSpin) / 1000) : null;
+    var active   = lastSpin && (now - lastSpin) < 60000;
+    var dot      = active
+      ? '<span style="color:var(--green);font-size:14px">&#9679;</span>'
+      : '<span style="color:#ff6600;font-size:14px">&#9679;</span>';
+    var spinStr  = secs === null
+      ? '<span style="color:var(--dim)">\u2014</span>'
+      : active
+        ? '<span style="color:var(--green)">' + secs + 's ago</span>'
+        : '<span style="color:#ff6600">' + secs + 's ago &#9201;</span>';
+    rows +=
+      '<tr style="border-bottom:1px solid #1e1e3a">' +
+        '<td style="padding:6px 4px">' + dot + '</td>' +
+        '<td style="padding:6px 4px;color:var(--blue);font-size:11px">' + _gameName(p.gameId) + '</td>' +
+        '<td style="padding:6px 4px;font-size:11px;text-align:right">' + spinStr + '</td>' +
+      '</tr>';
+  });
+  if (!rows) rows = '<tr><td colspan="3" style="text-align:center;color:var(--dim);padding:10px;font-size:11px">No players connected</td></tr>';
+
+  return '<div class="section">' +
+    '<div class="sec-title">&#128100; Connected Players</div>' +
+    '<table style="width:100%;border-collapse:collapse">' +
+      '<thead><tr style="border-bottom:1px solid #333">' +
+        '<th style="padding:4px;font-size:9px;color:var(--dim);text-align:left;width:20px"></th>' +
+        '<th style="padding:4px;font-size:9px;color:var(--dim);text-align:left">GAME</th>' +
+        '<th style="padding:4px;font-size:9px;color:var(--dim);text-align:right">LAST SPIN</th>' +
+      '</tr></thead>' +
+      '<tbody>' + rows + '</tbody>' +
+    '</table>' +
+  '</div>' +
+  '<div class="section">' +
+    '<div class="sec-title">Connection</div>' +
+    '<div class="row">' +
+      '<div><div class="row-lbl">Supabase Broadcast</div>' +
+      '<div class="row-sub">Ball position via Broadcast (no DB writes)</div></div>' +
+      '<div class="row-val" style="color:' + (_connected ? 'var(--blue)' : 'var(--danger)') + '">' + (_connected ? 'LIVE' : 'OFFLINE') + '</div>' +
+    '</div>' +
+    '<div class="row">' +
+      '<div><div class="row-lbl">Mode</div></div>' +
+      '<div class="row-val" style="color:' + (_isForced ? '#ff8800' : 'var(--green)') + '">' + (_isForced ? 'LOCAL' : 'WIDE AREA') + '</div>' +
+    '</div>' +
+    '<div class="row">' +
+      '<div><div class="row-lbl">Ball Position</div></div>' +
+      '<div class="row-val">' + _ballPos + ' / 75</div>' +
+    '</div>' +
+  '</div>' +
+  '<div class="section">' +
+    '<div class="sec-title">Audit Log</div>' +
+    (_auditLog.length === 0
+      ? '<div style="color:var(--dim);font-size:11px">No actions logged this session.</div>'
+      : _auditLog.slice(0, 20).map(function(e) {
+          return '<div style="padding:6px 0;border-bottom:1px solid #1a1a2e">' +
+            '<div style="font-size:10px;color:var(--blue);font-weight:bold">' + e.action + '</div>' +
+            '<div style="font-size:9px;color:var(--dim)">' + e.detail + '</div>' +
+            '<div style="font-size:8px;color:#443355;margin-top:2px">' + new Date(e.ts).toLocaleTimeString() + '</div>' +
+          '</div>';
+        }).join('')
+    ) +
+  '</div>';
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   RENDER — CONTROLS TAB
+   ══════════════════════════════════════════════════════════════════════ */
+function renderControls() {
+  return '<div class="section">' +
+    '<div class="sec-title">&#127922; Ball Call Actions</div>' +
+    '<button class="btn btn-blue btn-full" onclick="cmdNewCall()">&#9654; ISSUE NEW 75-BALL SEQUENCE</button>' +
+    '<button class="btn btn-full" style="background:#1a1a30;border:1px solid #444;color:#ccc;margin-top:8px" onclick="cmdResetPos()">&#8635; RESET BALL POSITION TO 0</button>' +
+  '</div>' +
+  '<div class="section">' +
+    '<div class="sec-title">&#9888; Override Mode</div>' +
+    '<div style="font-size:10px;color:var(--dim);margin-bottom:10px;line-height:1.5">' +
+      'Force all players to local ball call when wide area service must be interrupted.' +
+    '</div>' +
+    (!_isForced
+      ? '<button class="btn btn-full" style="background:#2a1000;border:1px solid #ff8800;color:#ff8800" onclick="cmdForceLocal()">&#9888; FORCE ALL PLAYERS TO LOCAL BALL CALL</button>'
+      : '<button class="btn btn-green btn-full" onclick="cmdRestoreWide()">&#9654; RESTORE WIDE AREA BALL CALL</button>'
+    ) +
+  '</div>' +
+  '<div class="section">' +
+    '<div class="sec-title">&#128260; Sync</div>' +
+    '<button class="btn btn-gold btn-full" onclick="cmdRefresh()">&#8635; REFRESH FROM DATABASE</button>' +
+  '</div>';
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   BALL GRID RENDERER
+   ══════════════════════════════════════════════════════════════════════ */
+function _renderBallGrid(seq, pos) {
+  if (!seq || !seq.length) {
+    return '<div style="color:var(--dim);font-size:10px;padding:8px 0">No sequence loaded</div>';
+  }
+  var cells = '';
+  for (var i = 0; i < 75; i++) {
+    var ball   = seq[i];
+    var called = i < pos;
+    var isPre  = i < 40;
+    var color  = !called ? 'rgba(255,255,255,0.12)'
+               : isPre   ? '#ffdd00'
+               :            '#ffffff';
+    var bgCol  = !called ? 'rgba(255,255,255,0.04)'
+               : isPre   ? 'rgba(255,220,0,0.15)'
+               :            'rgba(255,255,255,0.10)';
+    cells += '<div style="width:30px;height:24px;border-radius:3px;background:' + bgCol + ';' +
+             'color:' + color + ';font-size:9px;font-weight:' + (called ? '700' : '400') + ';' +
+             'display:inline-flex;align-items:center;justify-content:center;margin:1px">' +
+             (ball || '') + '</div>';
+  }
+  return '<div style="display:flex;flex-wrap:wrap;gap:0;margin:8px 0">' + cells + '</div>';
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   OPERATOR COMMANDS
+   ══════════════════════════════════════════════════════════════════════ */
+function cmdNewCall() {
+  if (!_client || !_connected) { toast('Not connected'); return; }
+  if (!confirm('Issue a NEW 75-ball sequence?\nThis resets all players to ball 1.')) return;
+  _client.rpc('upsert_ball_call', { p_game_id: 'WABC' }).then(function(res) {
+    if (res.error) { toast('Error: ' + res.error.message); return; }
+    var data = res.data || {};
+    _sequence = data.sequence || [];
+    _ballPos  = 0;
+    _issuedAt = data.issued_at || new Date().toISOString();
+    _updateBallHeader();
+    /* Broadcast to all game clients */
+    _broadcastCh.send({
+      type:    'broadcast',
+      event:   'new_call',
+      payload: { sequence: _sequence, issued_at: _issuedAt }
+    });
+    _audit('NEW BALL CALL', 'Fresh 75-ball sequence issued by ' + _operatorName);
+    if (_activeTab === 'caller' || _activeTab === 'controls') renderTab();
+    toast('\u25b6 New ball sequence issued');
+  });
+}
+
+function cmdResetPos() {
+  if (!_client || !_connected) { toast('Not connected'); return; }
+  if (!confirm('Reset ball position to 0?\nAll players restart from ball 1 on the existing sequence.')) return;
+  /* Write to DB as checkpoint, then broadcast */
+  _client.rpc('update_ball_pos', { p_game_id: 'WABC', p_pos: 0 }).then(function(res) {
+    if (res.error) { toast('Error: ' + res.error.message); return; }
+    _ballPos = 0;
+    _updateBallHeader();
+    _broadcastCh.send({ type: 'broadcast', event: 'reset_pos', payload: {} });
+    _audit('RESET BALL POS', 'Ball position reset to 0 by ' + _operatorName);
+    if (_activeTab === 'caller' || _activeTab === 'controls') renderTab();
+    toast('\u21bb Ball position reset');
+  });
+}
+
+function cmdForceLocal() {
+  if (!_client || !_connected) { toast('Not connected'); return; }
+  if (!confirm('Force ALL players to LOCAL ball call?\nWide area sequence will pause.')) return;
+  _client.from('progressive_commands').insert({
+    command:     'force_local_ball',
+    status:      'pending',
+    winner_game: 'WABC',
+    created_by:  _operatorName
+  }).then(function(res) {
+    if (res.error) { toast('Error: ' + res.error.message); return; }
+    _isForced = true;
+    _broadcastCh.send({ type: 'broadcast', event: 'force_local', payload: {} });
+    _audit('FORCE LOCAL', 'All players switched to local ball call by ' + _operatorName);
+    if (_activeTab === 'caller' || _activeTab === 'controls') renderTab();
+    toast('\u26a0 All players now on local ball call');
+  });
+}
+
+function cmdRestoreWide() {
+  if (!_client || !_connected) { toast('Not connected'); return; }
+  _client.rpc('upsert_ball_call', { p_game_id: 'WABC' }).then(function(res) {
+    if (res.error) { toast('Error issuing sequence: ' + res.error.message); return; }
+    var data = res.data || {};
+    _sequence = data.sequence || [];
+    _ballPos  = 0;
+    _issuedAt = data.issued_at || new Date().toISOString();
+    _updateBallHeader();
+    _client.from('progressive_commands').insert({
+      command:     'restore_wide_ball',
+      status:      'pending',
+      winner_game: 'WABC',
+      created_by:  _operatorName
+    }).then(function(res2) {
+      if (res2.error) { toast('Error: ' + res2.error.message); return; }
+      _isForced = false;
+      _broadcastCh.send({
+        type:    'broadcast',
+        event:   'restore_wide',
+        payload: { sequence: _sequence, issued_at: _issuedAt }
+      });
+      _audit('RESTORE WIDE', 'Wide area ball call restored by ' + _operatorName);
+      if (_activeTab === 'caller' || _activeTab === 'controls') renderTab();
+      toast('\u2714 Wide area ball call restored');
+    });
+  });
+}
+
+function cmdRefresh() {
+  if (!_client || !_connected) { toast('Not connected'); return; }
+  _fetchBallCallState(function() {
+    _updateBallHeader();
+    renderTab();
+    toast('Refreshed from database');
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   HELPERS
+   ══════════════════════════════════════════════════════════════════════ */
+function _gameName(id) {
+  var names = {
+    'straypups_1d':      'StrayPups $1',
+    'straypups_5d':      'StrayPups $5',
+    'tsbigmunny':        'TS Big Munny',
+    'WABC':              'WABC',
+    'wabc_operator':     'WABC Operator',
+    'operator':          'Operator'
+  };
+  return names[id] || id || '\u2014';
+}
+
+function _audit(action, detail) {
+  _auditLog.unshift({ ts: new Date().toISOString(), action: action, detail: detail || '' });
+  if (_auditLog.length > 100) _auditLog.length = 100;
+  if (_activeTab === 'status') renderTab();
+}
+
+var _toastTimer = null;
+function toast(msg) {
+  var el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('on');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(function() { el.classList.remove('on'); }, 2500);
+}
+</script>
+</body>
+</html>
