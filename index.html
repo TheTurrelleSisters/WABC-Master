@@ -282,7 +282,7 @@ if ('serviceWorker' in navigator) {
     <div id="loading-text">Connecting&hellip;</div>
   </div>
 
-  <div id="splash-ver">v1.6</div>
+  <div id="splash-ver">v1.7</div>
 </div>
 
 <!-- ══ LOCK SCREEN ══ -->
@@ -484,7 +484,13 @@ function splashError(msg) {
    ══════════════════════════════════════════════════════════════════════ */
 function initSupabase() {
   _setSplashStatus('Loading database SDK\u2026', '#ffaa00');
+  /* Remove any stale SDK instance before loading fresh */
+  if (window._sbScriptEl && window._sbScriptEl.parentNode) {
+    window._sbScriptEl.parentNode.removeChild(window._sbScriptEl);
+  }
+  window.supabase = undefined;
   var s = document.createElement('script');
+  window._sbScriptEl = s;
   s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.0/dist/umd/supabase.min.js';
   s.onload = function() {
     try {
