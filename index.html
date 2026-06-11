@@ -282,7 +282,7 @@ if ('serviceWorker' in navigator) {
     <div id="loading-text" id="loading-text">Connecting&hellip;</div>
   </div>
 
-  <div id="splash-ver">v1.0</div>
+  <div id="splash-ver">v1.1</div>
 </div>
 
 <!-- ══ LOCK SCREEN ══ -->
@@ -637,6 +637,8 @@ function _subscribePresence() {
           joinedAt: new Date().toISOString(),
           lastSpin: null
         });
+        /* Force re-sync after subscribe so player count shows immediately */
+        setTimeout(function() { _sync(); }, 1000);
       }
     });
 }
@@ -849,7 +851,7 @@ function renderControls() {
   return '<div class="section">' +
     '<div class="sec-title">&#127922; Ball Call Actions</div>' +
     '<button class="btn btn-blue btn-full" onclick="cmdNewCall()">&#9654; ISSUE NEW 75-BALL SEQUENCE</button>' +
-    '<button class="btn btn-full" style="background:#1a1a30;border:1px solid #444;color:#ccc;margin-top:8px" onclick="cmdResetPos()">&#8635; RESET BALL POSITION TO 0</button>' +
+
   '</div>' +
   '<div class="section">' +
     '<div class="sec-title">&#9888; Override Mode</div>' +
@@ -915,21 +917,6 @@ function cmdNewCall() {
     _audit('NEW BALL CALL', 'Fresh 75-ball sequence issued by ' + _operatorName);
     if (_activeTab === 'caller' || _activeTab === 'controls') renderTab();
     toast('\u25b6 New ball sequence issued');
-  });
-}
-
-function cmdResetPos() {
-  if (!_client || !_connected) { toast('Not connected'); return; }
-  if (!confirm('Reset ball position to 0?\nAll players restart from ball 1 on the existing sequence.')) return;
-  /* Write to DB as checkpoint, then broadcast */
-  _client.rpc('update_ball_pos', { p_game_id: 'WABC', p_pos: 0 }).then(function(res) {
-    if (res.error) { toast('Error: ' + res.error.message); return; }
-    _ballPos = 0;
-    _updateBallHeader();
-    _broadcastCh.send({ type: 'broadcast', event: 'reset_pos', payload: {} });
-    _audit('RESET BALL POS', 'Ball position reset to 0 by ' + _operatorName);
-    if (_activeTab === 'caller' || _activeTab === 'controls') renderTab();
-    toast('\u21bb Ball position reset');
   });
 }
 
