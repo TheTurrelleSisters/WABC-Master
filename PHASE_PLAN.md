@@ -4,7 +4,7 @@
 
 ---
 
-## Current Version: v1.2 (cache: wabc-v1.2)
+## Current Version: v1.3 (cache: wabc-v1.3)
 
 ---
 
@@ -58,3 +58,9 @@ Wide Area Ball Caller operator tool. VIEW ONLY. Shows the authoritative 75-ball 
 - ES5 only
 - View only tool — no game state modifications except Force Local/Restore Wide
 - Cache bust on every single build
+
+### v1.3 — PIN Pad Fix
+- Fixed killSplash using cssText += which was unreliable on Samsung Browser
+- Now sets each style property individually (opacity, pointerEvents, touchAction)
+- Fixes PIN pad unresponsive / lockup after splash on Samsung devices
+- Cache bust: wabc-v1.3

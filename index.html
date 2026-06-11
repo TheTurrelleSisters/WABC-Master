@@ -282,7 +282,7 @@ if ('serviceWorker' in navigator) {
     <div id="loading-text" id="loading-text">Connecting&hellip;</div>
   </div>
 
-  <div id="splash-ver">v1.2</div>
+  <div id="splash-ver">v1.3</div>
 </div>
 
 <!-- ══ LOCK SCREEN ══ -->
@@ -293,7 +293,11 @@ if ('serviceWorker' in navigator) {
     if (done) return; done = true;
     var sp = document.getElementById('splash');
     if (!sp) return;
-    sp.style.cssText += ';pointer-events:none!important;touch-action:none!important;z-index:-999!important;opacity:0;transition:opacity 0.6s';
+    /* Set each property individually — cssText += is unreliable on Samsung Browser */
+    sp.style.opacity = '0';
+    sp.style.pointerEvents = 'none';
+    sp.style.touchAction = 'none';
+    sp.style.transition = 'opacity 0.6s';
     setTimeout(function() {
       sp.style.display = 'none';
       var ls = document.getElementById('lock-screen');
