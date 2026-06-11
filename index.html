@@ -282,7 +282,7 @@ if ('serviceWorker' in navigator) {
     <div id="loading-text" id="loading-text">Connecting&hellip;</div>
   </div>
 
-  <div id="splash-ver">v1.1</div>
+  <div id="splash-ver">v1.2</div>
 </div>
 
 <!-- ══ LOCK SCREEN ══ -->
@@ -554,15 +554,6 @@ function _subscribeBroadcast() {
   });
 
   _broadcastCh
-    .on('broadcast', { event: 'pos' }, function(msg) {
-      if (!msg || !msg.payload) return;
-      var p = msg.payload;
-      /* Accept pos update only if it matches our current sequence */
-      if (p.seq_issued_at && _issuedAt && p.seq_issued_at !== _issuedAt) return;
-      _ballPos = parseInt(p.pos, 10) || 0;
-      _updateBallHeader();
-      if (_activeTab === 'caller') renderTab();
-    })
     .on('broadcast', { event: 'new_call' }, function(msg) {
       if (!msg || !msg.payload) return;
       var p = msg.payload;
@@ -670,19 +661,18 @@ function _subscribeCommands() {
    HEADER UPDATERS
    ══════════════════════════════════════════════════════════════════════ */
 function _updateBallHeader() {
-  var nextBall  = (_sequence && _ballPos < _sequence.length) ? _sequence[_ballPos] : '\u2014';
-  var posStr    = _ballPos + ' / 75';
-  var remaining = _sequence.length - _ballPos;
-  var issuedStr = _issuedAt ? new Date(_issuedAt).toLocaleTimeString() : '\u2014';
+  /* Header shows sequence metadata — not ball position (per-player local) */
+  var seqLen    = _sequence ? _sequence.length : 0;
+  var issuedStr = _issuedAt ? new Date(_issuedAt).toLocaleTimeString() : '—';
 
   var ballNumEl = document.getElementById('ball-num');
-  if (ballNumEl) ballNumEl.textContent = nextBall;
+  if (ballNumEl) ballNumEl.textContent = seqLen ? seqLen + ' BALLS' : '—';
 
   var posEl = document.getElementById('ball-pos-display');
-  if (posEl) posEl.textContent = posStr;
+  if (posEl) posEl.textContent = seqLen ? 'LIVE' : '—';
 
   var metaEl = document.getElementById('sequence-issued');
-  if (metaEl) metaEl.textContent = 'Issued: ' + issuedStr + ' \u00b7 ' + remaining + ' left';
+  if (metaEl) metaEl.textContent = 'Issued: ' + issuedStr;
 }
 
 function _updatePlayerCount() {
@@ -722,13 +712,10 @@ function renderTab() {
    RENDER — CALLER TAB
    ══════════════════════════════════════════════════════════════════════ */
 function renderCaller() {
-  var seq       = _sequence;
-  var pos       = _ballPos;
-  var nextBall  = seq && pos < seq.length ? seq[pos] : '\u2014';
-  var remaining = seq ? (seq.length - pos) : '\u2014';
-  var issued    = _issuedAt ? new Date(_issuedAt).toLocaleTimeString() : '\u2014';
+  var seq    = _sequence;
+  var issued = _issuedAt ? new Date(_issuedAt).toLocaleTimeString() : '—';
 
-  /* Player counts per game */
+  /* Player counts per game from presence */
   var byGame = {};
   var totalPlayers = 0;
   Object.keys(_presenceState).forEach(function(k) {
@@ -742,34 +729,31 @@ function renderCaller() {
   }).join(' &bull; ') || 'No players connected';
 
   var forceWarning = _isForced
-    ? '<div style="background:#2a1000;border:1px solid #ff8800;border-radius:6px;padding:8px 10px;margin-bottom:10px;font-size:11px;color:#ff8800">&#9888; LOCAL MODE — players are using local ball calls. Wide area sequence is paused.</div>'
+    ? '<div style="background:#2a1000;border:1px solid #ff8800;border-radius:6px;padding:8px 10px;margin-bottom:10px;font-size:11px;color:#ff8800">&#9888; LOCAL MODE — players are using local ball calls.</div>'
     : '';
 
   return '<div class="section">' +
     '<div class="sec-title">&#127922; Wide Area Ball Caller</div>' +
     forceWarning +
-    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">' +
+    /* Connected players + issued time */
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">' +
       '<div class="stat-card">' +
-        '<div style="font-size:8px;color:var(--dim);letter-spacing:1px;margin-bottom:4px">NEXT BALL</div>' +
-        '<div style="font-size:36px;font-weight:900;color:var(--blue);font-family:\'Arial Black\',Arial,sans-serif;line-height:1">' + nextBall + '</div>' +
+        '<div style="font-size:8px;color:var(--dim);letter-spacing:1px;margin-bottom:4px">CONNECTED</div>' +
+        '<div style="font-size:36px;font-weight:900;color:var(--green);font-family:'Arial Black',Arial,sans-serif;line-height:1">' + totalPlayers + '</div>' +
+        '<div style="font-size:8px;color:var(--dim);margin-top:3px">' + breakdown + '</div>' +
       '</div>' +
       '<div class="stat-card">' +
-        '<div style="font-size:8px;color:var(--dim);letter-spacing:1px;margin-bottom:4px">POSITION</div>' +
-        '<div style="font-size:22px;font-weight:900;color:var(--gold);font-family:\'Arial Black\',Arial,sans-serif;line-height:1">' + pos + '<span style="font-size:11px;color:var(--dim)">/75</span></div>' +
-      '</div>' +
-      '<div class="stat-card">' +
-        '<div style="font-size:8px;color:var(--dim);letter-spacing:1px;margin-bottom:4px">REMAINING</div>' +
-        '<div style="font-size:22px;font-weight:900;color:#ffd700;font-family:\'Arial Black\',Arial,sans-serif;line-height:1">' + remaining + '</div>' +
+        '<div style="font-size:8px;color:var(--dim);letter-spacing:1px;margin-bottom:4px">SEQUENCE ISSUED</div>' +
+        '<div style="font-size:16px;font-weight:900;color:var(--gold);line-height:1.3">' + issued + '</div>' +
+        '<div style="font-size:8px;color:var(--dim);margin-top:3px">75 balls &bull; Auto-renews on exhaust</div>' +
       '</div>' +
     '</div>' +
-    '<div style="font-size:10px;color:var(--dim);margin-bottom:6px">&#128100; ' + totalPlayers + ' connected &bull; ' + breakdown + '</div>' +
-    '<div style="font-size:9px;color:var(--dim);margin-bottom:4px">Issued: ' + issued + '</div>' +
     /* Legend */
-    '<div style="font-size:8px;color:var(--dim);letter-spacing:1px;margin-bottom:4px">' +
-      '<span style="color:#ffdd00">&#9632;</span> PRE-CALLED (1-40) &nbsp;' +
-      '<span style="color:#ffffff">&#9632;</span> ENTERTAINMENT (41-75)' +
+    '<div style="font-size:8px;color:var(--dim);letter-spacing:1px;margin-bottom:6px">' +
+      '<span style="color:#ffdd00">&#9632;</span> PRE-CALLED ZONE (1–40) &nbsp;' +
+      '<span style="color:#aaaaaa">&#9632;</span> ENTERTAINMENT ZONE (41–75)' +
     '</div>' +
-    _renderBallGrid(seq, pos) +
+    _renderBallGrid(seq) +
   '</div>';
 }
 
@@ -848,15 +832,13 @@ function renderStatus() {
    RENDER — CONTROLS TAB
    ══════════════════════════════════════════════════════════════════════ */
 function renderControls() {
+  /* Ball sequence is fully automatic — games request new sequences when needed.
+     Only operator control: Force Local / Restore Wide. */
   return '<div class="section">' +
-    '<div class="sec-title">&#127922; Ball Call Actions</div>' +
-    '<button class="btn btn-blue btn-full" onclick="cmdNewCall()">&#9654; ISSUE NEW 75-BALL SEQUENCE</button>' +
-
-  '</div>' +
-  '<div class="section">' +
     '<div class="sec-title">&#9888; Override Mode</div>' +
     '<div style="font-size:10px;color:var(--dim);margin-bottom:10px;line-height:1.5">' +
-      'Force all players to local ball call when wide area service must be interrupted.' +
+      'Force all players to local ball call when wide area service must be interrupted. ' +
+      'Ball sequence auto-renews when ball 75 is called or Cover All occurs.' +
     '</div>' +
     (!_isForced
       ? '<button class="btn btn-full" style="background:#2a1000;border:1px solid #ff8800;color:#ff8800" onclick="cmdForceLocal()">&#9888; FORCE ALL PLAYERS TO LOCAL BALL CALL</button>'
@@ -868,27 +850,23 @@ function renderControls() {
     '<button class="btn btn-gold btn-full" onclick="cmdRefresh()">&#8635; REFRESH FROM DATABASE</button>' +
   '</div>';
 }
-
 /* ══════════════════════════════════════════════════════════════════════
    BALL GRID RENDERER
    ══════════════════════════════════════════════════════════════════════ */
-function _renderBallGrid(seq, pos) {
+function _renderBallGrid(seq) {
   if (!seq || !seq.length) {
     return '<div style="color:var(--dim);font-size:10px;padding:8px 0">No sequence loaded</div>';
   }
   var cells = '';
   for (var i = 0; i < 75; i++) {
-    var ball   = seq[i];
-    var called = i < pos;
-    var isPre  = i < 40;
-    var color  = !called ? 'rgba(255,255,255,0.12)'
-               : isPre   ? '#ffdd00'
-               :            '#ffffff';
-    var bgCol  = !called ? 'rgba(255,255,255,0.04)'
-               : isPre   ? 'rgba(255,220,0,0.15)'
-               :            'rgba(255,255,255,0.10)';
+    var ball  = seq[i];
+    var isPre = i < 40;
+    /* Yellow = pre-called zone (balls 1-40), white = entertainment zone (41-75)
+       All balls always visible — position is per-player local, not tracked here */
+    var color = isPre ? '#ffdd00' : '#cccccc';
+    var bgCol = isPre ? 'rgba(255,220,0,0.12)' : 'rgba(255,255,255,0.06)';
     cells += '<div style="width:30px;height:24px;border-radius:3px;background:' + bgCol + ';' +
-             'color:' + color + ';font-size:9px;font-weight:' + (called ? '700' : '400') + ';' +
+             'color:' + color + ';font-size:9px;font-weight:600;' +
              'display:inline-flex;align-items:center;justify-content:center;margin:1px">' +
              (ball || '') + '</div>';
   }
@@ -898,27 +876,6 @@ function _renderBallGrid(seq, pos) {
 /* ══════════════════════════════════════════════════════════════════════
    OPERATOR COMMANDS
    ══════════════════════════════════════════════════════════════════════ */
-function cmdNewCall() {
-  if (!_client || !_connected) { toast('Not connected'); return; }
-  if (!confirm('Issue a NEW 75-ball sequence?\nThis resets all players to ball 1.')) return;
-  _client.rpc('upsert_ball_call', { p_game_id: 'WABC' }).then(function(res) {
-    if (res.error) { toast('Error: ' + res.error.message); return; }
-    var data = res.data || {};
-    _sequence = data.sequence || [];
-    _ballPos  = 0;
-    _issuedAt = data.issued_at || new Date().toISOString();
-    _updateBallHeader();
-    /* Broadcast to all game clients */
-    _broadcastCh.send({
-      type:    'broadcast',
-      event:   'new_call',
-      payload: { sequence: _sequence, issued_at: _issuedAt }
-    });
-    _audit('NEW BALL CALL', 'Fresh 75-ball sequence issued by ' + _operatorName);
-    if (_activeTab === 'caller' || _activeTab === 'controls') renderTab();
-    toast('\u25b6 New ball sequence issued');
-  });
-}
 
 function cmdForceLocal() {
   if (!_client || !_connected) { toast('Not connected'); return; }
