@@ -282,7 +282,7 @@ if ('serviceWorker' in navigator) {
     <div id="loading-text">Connecting&hellip;</div>
   </div>
 
-  <div id="splash-ver">v1.7</div>
+  <div id="splash-ver">v1.8</div>
 </div>
 
 <!-- ══ LOCK SCREEN ══ -->
@@ -542,17 +542,22 @@ function _fetchBallCallState(cb) {
   _client.from('ball_call')
     .select('sequence, ball_pos, issued_at')
     .eq('game_id', 'WABC')
-    .single()
+    .maybeSingle()
     .then(function(res) {
       if (res.error) {
-        /* Row may not exist yet — seed it */
+        splashError('DB connection failed: ' + res.error.message);
+        return;
+      }
+      if (!res.data) {
+        /* Row does not exist yet — create it */
         _client.rpc('upsert_ball_call', { p_game_id: 'WABC' }).then(function(r2) {
-          if (r2.error) { splashError('DB connection failed: ' + r2.error.message); return; }
+          if (r2.error) { splashError('DB error: ' + r2.error.message); return; }
           if (r2.data) {
             _sequence  = r2.data.sequence  || [];
             _ballPos   = r2.data.ball_pos  || 0;
             _issuedAt  = r2.data.issued_at || new Date().toISOString();
           }
+          _updateBallHeader();
           if (cb) cb();
         });
         return;
@@ -562,6 +567,8 @@ function _fetchBallCallState(cb) {
       _issuedAt = res.data.issued_at || null;
       _updateBallHeader();
       if (cb) cb();
+    }).catch(function(err) {
+      splashError('Connection error: ' + (err.message || 'unknown'));
     });
 }
 
