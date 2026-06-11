@@ -78,3 +78,31 @@ Wide Area Ball Caller operator tool. VIEW ONLY. Shows the authoritative 75-ball 
 - Removal happens AFTER fade completes — no visible difference to user
 - Fixed duplicate id="loading-text" attribute on splash status element
 - Cache bust: wabc-v1.5
+
+### v1.6 — Splash Error + Retry + DOM Removal
+- splashError() added — red error state + RETRY button on connection failure
+- All setTimeout retry loops removed — user must press RETRY
+- killSplash removes splash from DOM entirely (not just hidden)
+- Duplicate splash div removed from Progressive Operator (pre-existing issue)
+- Cache bust: wabc-v1.6
+
+### v1.7 — SDK Cleanup
+- window.supabase cleared before each retry to prevent stale SDK instance
+- window._sbScriptEl tracks script element for proper cleanup
+- Cache bust: wabc-v1.7
+
+### v1.8 — maybeSingle() Fix
+- _fetchBallCallState was using .single() which throws error when WABC row missing
+- Changed to .maybeSingle() — handles missing row gracefully, creates it automatically
+- Added .catch() handler for network errors
+- Cache bust: wabc-v1.8
+
+---
+
+## Current Version: v1.8 (cache: wabc-v1.8)
+
+## Pending
+- [ ] Confirm WABC connects and shows LIVE
+- [ ] Ball grid displays correctly with yellow/white zones
+- [ ] Player count updates when games connect
+- [ ] Force Local tested end-to-end
