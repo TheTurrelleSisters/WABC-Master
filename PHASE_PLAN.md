@@ -4,7 +4,7 @@
 
 ---
 
-## Current Version: v1.3 (cache: wabc-v1.3)
+## Current Version: v1.5 (cache: wabc-v1.5)
 
 ---
 
@@ -64,3 +64,17 @@ Wide Area Ball Caller operator tool. VIEW ONLY. Shows the authoritative 75-ball 
 - Now sets each style property individually (opacity, pointerEvents, touchAction)
 - Fixes PIN pad unresponsive / lockup after splash on Samsung devices
 - Cache bust: wabc-v1.3
+
+### v1.4 — PIN Pad Fix Take 2
+- killSplash now removes splash element from DOM entirely instead of hiding it
+- Eliminates any possibility of invisible splash overlay blocking PIN pad touches
+- Previous approach (opacity:0 + display:none) was still leaving element in DOM
+  on Samsung Browser which intercepted touch events despite being invisible
+- Cache bust: wabc-v1.4
+
+### v1.5 — Splash + PIN Fix Final
+- Splash animation and connection status preserved
+- Splash fades out (0.8s opacity transition) then removed from DOM
+- Removal happens AFTER fade completes — no visible difference to user
+- Fixed duplicate id="loading-text" attribute on splash status element
+- Cache bust: wabc-v1.5

@@ -279,10 +279,10 @@ if ('serviceWorker' in navigator) {
 
   <div id="loading-wrap">
     <div id="loading-track"><div id="loading-bar"></div></div>
-    <div id="loading-text" id="loading-text">Connecting&hellip;</div>
+    <div id="loading-text">Connecting&hellip;</div>
   </div>
 
-  <div id="splash-ver">v1.3</div>
+  <div id="splash-ver">v1.6</div>
 </div>
 
 <!-- ══ LOCK SCREEN ══ -->
@@ -293,18 +293,17 @@ if ('serviceWorker' in navigator) {
     if (done) return; done = true;
     var sp = document.getElementById('splash');
     if (!sp) return;
-    /* Set each property individually — cssText += is unreliable on Samsung Browser */
+    /* Fade out, then remove from DOM entirely.
+       Removal prevents invisible overlay blocking PIN pad on Samsung Browser. */
+    sp.style.transition = 'opacity 0.8s ease';
     sp.style.opacity = '0';
-    sp.style.pointerEvents = 'none';
-    sp.style.touchAction = 'none';
-    sp.style.transition = 'opacity 0.6s';
     setTimeout(function() {
-      sp.style.display = 'none';
+      if (sp && sp.parentNode) sp.parentNode.removeChild(sp);
       var ls = document.getElementById('lock-screen');
       if (ls) ls.style.display = 'flex';
-    }, 650);
+    }, 850);
   };
-  setTimeout(window.killSplash, 10000);
+  /* No fallback timeout — error state requires user to press RETRY */
 }());
 </script>
 
@@ -459,6 +458,27 @@ function _setSplashStatus(msg, color) {
   el.style.color = color || '';
 }
 
+function splashError(msg) {
+  var bar = document.getElementById('loading-bar');
+  if (bar) { bar.style.animation = 'none'; bar.style.width = '100%'; bar.style.background = '#ff3300'; }
+  _setSplashStatus(msg, '#ff3300');
+  var wrap = document.getElementById('loading-wrap');
+  if (wrap && !document.getElementById('splash-retry')) {
+    var btn = document.createElement('button');
+    btn.id = 'splash-retry';
+    btn.textContent = 'RETRY';
+    btn.style.cssText = 'margin-top:12px;padding:8px 28px;background:transparent;border:1.5px solid #00cfff;color:#00cfff;font-size:11px;letter-spacing:2px;border-radius:20px;cursor:pointer;display:block;';
+    btn.onclick = function() {
+      var b = document.getElementById('loading-bar');
+      if (b) { b.style.animation = ''; b.style.width = '0%'; b.style.background = ''; }
+      var r = document.getElementById('splash-retry');
+      if (r && r.parentNode) r.parentNode.removeChild(r);
+      initSupabase();
+    };
+    wrap.appendChild(btn);
+  }
+}
+
 /* ══════════════════════════════════════════════════════════════════════
    SUPABASE INIT
    ══════════════════════════════════════════════════════════════════════ */
@@ -484,13 +504,11 @@ function initSupabase() {
         }, 800);
       });
     } catch(e) {
-      _setSplashStatus('Init error: ' + e.message, '#ff3300');
-      setTimeout(initSupabase, 5000);
+      splashError('Init error: ' + e.message);
     }
   };
   s.onerror = function() {
-    _setSplashStatus('SDK load failed \u2014 retrying\u2026', '#ff3300');
-    setTimeout(initSupabase, 5000);
+    splashError('SDK load failed');
   };
   document.head.appendChild(s);
 }
@@ -523,7 +541,8 @@ function _fetchBallCallState(cb) {
       if (res.error) {
         /* Row may not exist yet — seed it */
         _client.rpc('upsert_ball_call', { p_game_id: 'WABC' }).then(function(r2) {
-          if (!r2.error && r2.data) {
+          if (r2.error) { splashError('DB connection failed: ' + r2.error.message); return; }
+          if (r2.data) {
             _sequence  = r2.data.sequence  || [];
             _ballPos   = r2.data.ball_pos  || 0;
             _issuedAt  = r2.data.issued_at || new Date().toISOString();

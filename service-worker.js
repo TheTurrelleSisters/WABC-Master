@@ -3,7 +3,7 @@
  * Gold Coins Casino System v1.0
  * Bump CACHE_VER on every release.
  */
-var CACHE_VER  = 'wabc-v1.3';
+var CACHE_VER  = 'wabc-v1.6';
 var CACHE_URLS = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', function(e) {
