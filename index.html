@@ -643,6 +643,7 @@ function _subscribePresence() {
   });
   function _sync() {
     var state = _presenceCh.presenceState();
+    console.log('[WABC-DEBUG] presence sync, raw state keys:', Object.keys(state).length, JSON.stringify(state));
     _presenceState = {};
     Object.keys(state).forEach(function(k) {
       var entries = state[k];
@@ -650,6 +651,7 @@ function _subscribePresence() {
         _presenceState[k] = entries[0];
       }
     });
+    console.log('[WABC-DEBUG] _presenceState after filter:', JSON.stringify(_presenceState));
     _updatePlayerCount();
     if (_activeTab === 'caller' || _activeTab === 'status') renderTab();
   }
