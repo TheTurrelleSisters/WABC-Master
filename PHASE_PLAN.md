@@ -106,3 +106,17 @@ Wide Area Ball Caller operator tool. VIEW ONLY. Shows the authoritative 75-ball 
 - [ ] Ball grid displays correctly with yellow/white zones
 - [ ] Player count updates when games connect
 - [ ] Force Local tested end-to-end
+
+### v1.9 — CRITICAL: Legacy JWT Anon Key Fix
+- Same fix — sb_publishable_ broken for Realtime WebSocket
+- Cache bust: wabc-v1.9
+
+### v1.10 — CRITICAL: Fixed Page-Breaking Syntax Error
+- Uncaught SyntaxError: Unexpected identifier 'Arial' on line 787
+- 'Arial Black' used literal single quotes inside a single-quoted JS string,
+  terminating the string early and breaking the ENTIRE script block
+- This is why initSupabase() NEVER RAN — splash was stuck on "Connecting"
+  forever because the JS parser failed before any code executed
+- Fixed: 'Arial Black' -> &quot;Arial Black&quot; in the players-connected stat card
+- Removed debug console.log statements after diagnosis
+- Cache bust: wabc-v1.10
