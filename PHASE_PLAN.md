@@ -164,3 +164,9 @@ WABC/local-vs-wide-area switching issue. To be investigated next session.
 
 ### v1.14 — Removed "Ball Position" from Status tab (cosmetic, per Sasha)
 Cache bust: wabc-v1.14
+
+### v1.15 — Presence Retry Fix
+Same one-shot-subscribe presence bug as games/Progressive Operator — fixed
+with exponential backoff retry (2s->30s cap). Removed noisy [WABC-DEBUG]
+console.log calls from presence sync (no longer needed for diagnosis).
+Cache bust: wabc-v1.15

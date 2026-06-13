@@ -282,7 +282,7 @@ if ('serviceWorker' in navigator) {
     <div id="loading-text">Connecting&hellip;</div>
   </div>
 
-  <div id="splash-ver">v1.14</div>
+  <div id="splash-ver">v1.15</div>
 </div>
 
 <!-- ══ LOCK SCREEN ══ -->
@@ -644,14 +644,17 @@ function _subscribeBroadcast() {
 /* ══════════════════════════════════════════════════════════════════════
    PRESENCE — shared with progressive controller
    ══════════════════════════════════════════════════════════════════════ */
+var _wabcPresenceRetryDelay = 2000;
 function _subscribePresence() {
   var sessionKey = 'wabc_' + Math.random().toString(36).substr(2, 9);
+  _doSubscribePresence(sessionKey);
+}
+function _doSubscribePresence(sessionKey) {
   _presenceCh = _client.channel('presence-lobby', {
     config: { presence: { key: sessionKey } }
   });
   function _sync() {
     var state = _presenceCh.presenceState();
-    console.log('[WABC-DEBUG] presence sync, raw state keys:', Object.keys(state).length, JSON.stringify(state));
     _presenceState = {};
     Object.keys(state).forEach(function(k) {
       var entries = state[k];
@@ -659,7 +662,6 @@ function _subscribePresence() {
         _presenceState[k] = entries[0];
       }
     });
-    console.log('[WABC-DEBUG] _presenceState after filter:', JSON.stringify(_presenceState));
     _updatePlayerCount();
     if (_activeTab === 'caller' || _activeTab === 'status') renderTab();
   }
@@ -669,6 +671,7 @@ function _subscribePresence() {
     .on('presence', { event: 'leave' }, _sync)
     .subscribe(function(status) {
       if (status === 'SUBSCRIBED') {
+        _wabcPresenceRetryDelay = 2000;
         _presenceCh.track({
           gameId: 'wabc_operator',
           joinedAt: new Date().toISOString(),
@@ -676,6 +679,25 @@ function _subscribePresence() {
         });
         /* Force re-sync after subscribe so player count shows immediately */
         setTimeout(function() { _sync(); }, 1000);
+      } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+        /* Previously a ONE-SHOT subscribe — a failed first attempt (e.g.
+           during Supabase free-tier Realtime tenant cold-start) meant
+           .track() never fired and presence stayed empty forever. Retry
+           with exponential backoff. */
+        console.warn('[WABC] presence channel ' + status + ' — reconnecting in ' + (_wabcPresenceRetryDelay/1000) + 's');
+        var _old = _presenceCh;
+        var _delay = _wabcPresenceRetryDelay;
+        _wabcPresenceRetryDelay = Math.min(_wabcPresenceRetryDelay * 2, 30000);
+        setTimeout(function() {
+          try {
+            var _rm = _client.removeChannel(_old);
+            if (_rm && typeof _rm.then === 'function') {
+              _rm.then(function(){ _doSubscribePresence(sessionKey); }).catch(function(){ _doSubscribePresence(sessionKey); });
+            } else {
+              _doSubscribePresence(sessionKey);
+            }
+          } catch(e) { _doSubscribePresence(sessionKey); }
+        }, _delay);
       }
     });
 }
