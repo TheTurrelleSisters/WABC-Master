@@ -161,3 +161,6 @@ KNOWN OPEN ISSUE (not yet investigated): both StrayPups games appear to be
 broadcasting DIFFERENT ball-call sequences again (regression) — possible
 WABC/local-vs-wide-area switching issue. To be investigated next session.
 
+
+### v1.14 — Removed "Ball Position" from Status tab (cosmetic, per Sasha)
+Cache bust: wabc-v1.14

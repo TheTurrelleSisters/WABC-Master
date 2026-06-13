@@ -282,7 +282,7 @@ if ('serviceWorker' in navigator) {
     <div id="loading-text">Connecting&hellip;</div>
   </div>
 
-  <div id="splash-ver">v1.13</div>
+  <div id="splash-ver">v1.14</div>
 </div>
 
 <!-- ══ LOCK SCREEN ══ -->
@@ -853,10 +853,6 @@ function renderStatus() {
     '<div class="row">' +
       '<div><div class="row-lbl">Mode</div></div>' +
       '<div class="row-val" style="color:' + (_isForced ? '#ff8800' : 'var(--green)') + '">' + (_isForced ? 'LOCAL' : 'WIDE AREA') + '</div>' +
-    '</div>' +
-    '<div class="row">' +
-      '<div><div class="row-lbl">Ball Position</div></div>' +
-      '<div class="row-val">' + _ballPos + ' / 75</div>' +
     '</div>' +
   '</div>' +
   '<div class="section">' +
