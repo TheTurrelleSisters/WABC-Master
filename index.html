@@ -282,7 +282,7 @@ if ('serviceWorker' in navigator) {
     <div id="loading-text">Connecting&hellip;</div>
   </div>
 
-  <div id="splash-ver">v1.10</div>
+  <div id="splash-ver">v1.12</div>
 </div>
 
 <!-- ══ LOCK SCREEN ══ -->
@@ -717,7 +717,7 @@ function _updatePlayerCount() {
   var count = 0;
   Object.keys(_presenceState).forEach(function(k) {
     var p = _presenceState[k];
-    if (p && p.gameId !== 'operator' && p.gameId !== 'wabc_operator') count++;
+    if (p && p.gameId !== 'operator' && p.gameId !== 'wabc_operator' && p.gameId !== 'floor_operator') count++;
   });
   var el = document.getElementById('players-count');
   if (el) el.textContent = count + (count === 1 ? ' player' : ' players');
@@ -758,7 +758,7 @@ function renderCaller() {
   var totalPlayers = 0;
   Object.keys(_presenceState).forEach(function(k) {
     var p = _presenceState[k];
-    if (!p || p.gameId === 'operator' || p.gameId === 'wabc_operator') return;
+    if (!p || p.gameId === 'operator' || p.gameId === 'wabc_operator' || p.gameId === 'floor_operator') return;
     byGame[p.gameId] = (byGame[p.gameId] || 0) + 1;
     totalPlayers++;
   });
@@ -803,7 +803,7 @@ function renderStatus() {
   var now  = Date.now();
   Object.keys(_presenceState).forEach(function(k) {
     var p = _presenceState[k];
-    if (!p || p.gameId === 'operator' || p.gameId === 'wabc_operator') return;
+    if (!p || p.gameId === 'operator' || p.gameId === 'wabc_operator' || p.gameId === 'floor_operator') return;
     var lastSpin = p.lastSpin ? new Date(p.lastSpin).getTime() : 0;
     var secs     = lastSpin ? Math.floor((now - lastSpin) / 1000) : null;
     var active   = lastSpin && (now - lastSpin) < 60000;

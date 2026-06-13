@@ -120,3 +120,16 @@ Wide Area Ball Caller operator tool. VIEW ONLY. Shows the authoritative 75-ball 
 - Fixed: 'Arial Black' -> &quot;Arial Black&quot; in the players-connected stat card
 - Removed debug console.log statements after diagnosis
 - Cache bust: wabc-v1.10
+
+### v1.11 — Bug A: Player Count Exclusion Fix
+- _updatePlayerCount and renderCaller/renderStatus now also exclude
+  'floor_operator' (previously only excluded 'operator' and 'wabc_operator').
+  Floor Manager being open no longer inflates WABC's connected-player count.
+- Cache bust: wabc-v1.11
+
+### v1.12 — CRITICAL: Channel Reconnect Loop Fixed (likely root cause of 0-players)
+Same fix as StrayPups v5.75 — wabc.js _subscribe() now awaits removeChannel()
+before rejoining the 'wabc-ballpos' topic, fixing an infinite
+CHANNEL_ERROR/CLOSED reconnect loop that was destabilizing the entire
+websocket (and therefore presence-lobby too).
+Cache bust: wabc-v1.12
