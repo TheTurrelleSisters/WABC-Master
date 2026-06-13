@@ -282,7 +282,7 @@ if ('serviceWorker' in navigator) {
     <div id="loading-text">Connecting&hellip;</div>
   </div>
 
-  <div id="splash-ver">v1.12</div>
+  <div id="splash-ver">v1.13</div>
 </div>
 
 <!-- ══ LOCK SCREEN ══ -->
@@ -495,7 +495,15 @@ function initSupabase() {
   s.onload = function() {
     try {
       _setSplashStatus('Connecting\u2026', '#ffaa00');
-      _client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      _client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          auth: { persistSession: false, detectSessionInUrl: false,
+            storage: {
+              getItem: function(key){ return null; },
+              setItem: function(key,value){},
+              removeItem: function(key){}
+            }
+          }
+        });
       _fetchBallCallState(function() {
         _connected = true;
         _setSplashStatus('Connected \u2713', '#00cfff');
