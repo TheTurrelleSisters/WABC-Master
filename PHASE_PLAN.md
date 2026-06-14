@@ -178,3 +178,21 @@ tool unable to see other presences with no visible error. Added a 60s
 heartbeat: fully removeChannel + recreate the presence channel on a fixed
 interval.
 Cache bust: wabc-v1.16
+
+### REVERT — Presence Heartbeat removed (caused console flood + lockup)
+v3.18/v1.16/v1.7's 60s heartbeat caused console flooding and a system
+lockup, most likely from racing with the existing error-retry logic and/or
+hitting free-tier Realtime rate limits via frequent channel churn.
+REVERTED ENTIRELY — back to one-shot subscribe + error-triggered retry.
+"0 players with active games" remains OPEN.
+Cache bust: see service-worker.js
+
+### v1.18 — Connected Players now from player_registry
+Connected/Inactive counts and player lists now read from
+player_registry (durable DB table) instead of presence-lobby (ephemeral
+Realtime state, unreliable all session). "Connected" = last_seen within
+3 minutes; "Inactive" (no spin in 60s+) = last_seen 60s-3min ago. Polled
+every 5s. Requires the NEW touch_player_last_seen SQL RPC (see games
+PHASE_PLAN v5.84) and game build v5.84+ to keep last_seen fresh for
+nickname-less players too.
+Cache bust: wabc-v1.18

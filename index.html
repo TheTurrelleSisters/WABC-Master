@@ -282,7 +282,7 @@ if ('serviceWorker' in navigator) {
     <div id="loading-text">Connecting&hellip;</div>
   </div>
 
-  <div id="splash-ver">v1.16</div>
+  <div id="splash-ver">v1.18</div>
 </div>
 
 <!-- ══ LOCK SCREEN ══ -->
@@ -401,6 +401,12 @@ var _isForced        = false; /* true = all clients on local ball call */
 var _presenceState   = {};
 var _presenceCh      = null;
 
+/* Player registry — durable, DB-backed "connected players" source.
+   Replaces presence-lobby for player counts/lists. */
+var _playerRegistry   = [];
+var PLAYER_ACTIVE_MS  = 60 * 1000;   /* last_seen within this = active/spinning */
+var PLAYER_STALE_MS   = 180 * 1000;  /* last_seen older than this = drop entirely */
+
 /* Channels */
 var _broadcastCh     = null; /* Supabase Broadcast channel for ball pos */
 var _commandsCh      = null; /* postgres_changes on progressive_commands */
@@ -512,6 +518,7 @@ function initSupabase() {
         setConnStatus('connected');
         _subscribeBroadcast();
         _subscribePresence();
+        startPlayerRegistryPolling();
         _subscribeCommands();
         setTimeout(function() {
           if (typeof window.killSplash === 'function') window.killSplash();
@@ -648,24 +655,6 @@ var _wabcPresenceRetryDelay = 2000;
 function _subscribePresence() {
   var sessionKey = 'wabc_' + Math.random().toString(36).substr(2, 9);
   _doSubscribePresence(sessionKey);
-
-  /* PRESENCE HEARTBEAT (every 60s): full teardown+recreate of the
-     presence channel. Guards against a "zombie" channel — a silent
-     socket reconnect (Supabase free-tier Realtime tenant cold-start)
-     can leave this channel joined locally but dead server-side, with
-     no CHANNEL_ERROR ever firing. */
-  setInterval(function () {
-    if (!_client) return;
-    var _old = _presenceCh;
-    try {
-      var _rm = _client.removeChannel(_old);
-      if (_rm && typeof _rm.then === 'function') {
-        _rm.then(function(){ _doSubscribePresence(sessionKey); }).catch(function(){ _doSubscribePresence(sessionKey); });
-      } else {
-        _doSubscribePresence(sessionKey);
-      }
-    } catch (e) { _doSubscribePresence(sessionKey); }
-  }, 60000);
 }
 function _doSubscribePresence(sessionKey) {
   _presenceCh = _client.channel('presence-lobby', {
@@ -761,12 +750,38 @@ function _updateBallHeader() {
   if (metaEl) metaEl.textContent = 'Issued: ' + issuedStr;
 }
 
-function _updatePlayerCount() {
-  var count = 0;
-  Object.keys(_presenceState).forEach(function(k) {
-    var p = _presenceState[k];
-    if (p && p.gameId !== 'operator' && p.gameId !== 'wabc_operator' && p.gameId !== 'floor_operator') count++;
+/* ══════════════════════════════════════════════════════════════════════
+   PLAYER REGISTRY — durable, DB-backed "connected players" source.
+   Replaces presence-lobby for player counts/lists. Polled every 5s;
+   last_seen is touched by the game on every spin (touch_player_last_seen
+   RPC), regardless of nickname.
+   ══════════════════════════════════════════════════════════════════════ */
+function fetchPlayerRegistry() {
+  if (!_client) return;
+  _client.from('player_registry').select('*').then(function(res) {
+    if (res.error) { console.warn('[WABC] player_registry fetch error:', res.error.message); return; }
+    _playerRegistry = res.data || [];
+    _updatePlayerCount();
+    if (_activeTab === 'status' || _activeTab === 'caller') renderTab();
   });
+}
+
+function startPlayerRegistryPolling() {
+  fetchPlayerRegistry();
+  setInterval(fetchPlayerRegistry, 5000);
+}
+
+/* Rows still considered "connected" (last_seen within PLAYER_STALE_MS) */
+function _connectedPlayers() {
+  var now = Date.now();
+  return _playerRegistry.filter(function(p) {
+    if (!p.last_seen) return false;
+    return (now - new Date(p.last_seen).getTime()) < PLAYER_STALE_MS;
+  });
+}
+
+function _updatePlayerCount() {
+  var count = _connectedPlayers().length;
   var el = document.getElementById('players-count');
   if (el) el.textContent = count + (count === 1 ? ' player' : ' players');
 }
@@ -801,13 +816,11 @@ function renderCaller() {
   var seq    = _sequence;
   var issued = _issuedAt ? new Date(_issuedAt).toLocaleTimeString() : '—';
 
-  /* Player counts per game from presence */
+  /* Player counts per game from player_registry */
   var byGame = {};
   var totalPlayers = 0;
-  Object.keys(_presenceState).forEach(function(k) {
-    var p = _presenceState[k];
-    if (!p || p.gameId === 'operator' || p.gameId === 'wabc_operator' || p.gameId === 'floor_operator') return;
-    byGame[p.gameId] = (byGame[p.gameId] || 0) + 1;
+  _connectedPlayers().forEach(function(p) {
+    byGame[p.game_id] = (byGame[p.game_id] || 0) + 1;
     totalPlayers++;
   });
   var breakdown = Object.keys(byGame).map(function(g) {
@@ -849,24 +862,20 @@ function renderCaller() {
 function renderStatus() {
   var rows = '';
   var now  = Date.now();
-  Object.keys(_presenceState).forEach(function(k) {
-    var p = _presenceState[k];
-    if (!p || p.gameId === 'operator' || p.gameId === 'wabc_operator' || p.gameId === 'floor_operator') return;
-    var lastSpin = p.lastSpin ? new Date(p.lastSpin).getTime() : 0;
-    var secs     = lastSpin ? Math.floor((now - lastSpin) / 1000) : null;
-    var active   = lastSpin && (now - lastSpin) < 60000;
+  _connectedPlayers().forEach(function(p) {
+    var age      = now - new Date(p.last_seen).getTime();
+    var secs     = Math.floor(age / 1000);
+    var active   = age < PLAYER_ACTIVE_MS;
     var dot      = active
       ? '<span style="color:var(--green);font-size:14px">&#9679;</span>'
       : '<span style="color:#ff6600;font-size:14px">&#9679;</span>';
-    var spinStr  = secs === null
-      ? '<span style="color:var(--dim)">\u2014</span>'
-      : active
+    var spinStr  = active
         ? '<span style="color:var(--green)">' + secs + 's ago</span>'
         : '<span style="color:#ff6600">' + secs + 's ago &#9201;</span>';
     rows +=
       '<tr style="border-bottom:1px solid #1e1e3a">' +
         '<td style="padding:6px 4px">' + dot + '</td>' +
-        '<td style="padding:6px 4px;color:var(--blue);font-size:11px">' + _gameName(p.gameId) + '</td>' +
+        '<td style="padding:6px 4px;color:var(--blue);font-size:11px">' + _gameName(p.game_id) + '</td>' +
         '<td style="padding:6px 4px;font-size:11px;text-align:right">' + spinStr + '</td>' +
       '</tr>';
   });
