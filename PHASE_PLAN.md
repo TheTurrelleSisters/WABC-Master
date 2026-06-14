@@ -196,3 +196,31 @@ every 5s. Requires the NEW touch_player_last_seen SQL RPC (see games
 PHASE_PLAN v5.84) and game build v5.84+ to keep last_seen fresh for
 nickname-less players too.
 Cache bust: wabc-v1.18
+
+
+### v1.19 — Custom Bingo Card Generator (NEW feature)
+- New "Custom Bingo Card Generator" section in the Controls tab.
+  Operator enters N (1-75, default 24) and taps ARM. Writes a one-shot
+  row to progressive_commands: { command:'custom_card', status:'armed',
+  winner_game:'WABC', balls_to_use:N, created_by:<operator> }.
+- When armed, the panel shows "ARMED — first N balls" with a CANCEL
+  button (sets status='cancelled').
+- Consumed automatically by whichever player (either game) spins next:
+  their client calls Progressive.getCustomCardBalls() ->
+  consumeCustomCard() (sets status='consumed'), then generates that
+  spin's card via genBiasedBingoCard(N) — numbers biased toward the
+  first N balls of the current sequence. Whatever patterns naturally
+  complete by ball N is however the math falls out — no progressive-pot
+  or claim logic attached, purely "deal this card to the next spinner."
+- _subscribeCommands extended (INSERT + UPDATE) to track
+  _customCardArmed/_customCardBalls/_customCardCommandId; new
+  _fetchCustomCardState() checks for an already-armed row on connect
+  (e.g. armed by another operator session before this one connected).
+
+SQL (run before deploy, see add_custom_card_column.sql, shared with
+games PHASE_PLAN v5.88):
+  ALTER TABLE progressive_commands ADD COLUMN IF NOT EXISTS balls_to_use integer;
+  (also verify command/status CHECK constraints allow 'custom_card' /
+  'consumed' / 'cancelled')
+
+Cache bust: wabc-v1.19

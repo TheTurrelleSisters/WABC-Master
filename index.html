@@ -282,7 +282,7 @@ if ('serviceWorker' in navigator) {
     <div id="loading-text">Connecting&hellip;</div>
   </div>
 
-  <div id="splash-ver">v1.18</div>
+  <div id="splash-ver">v1.19</div>
 </div>
 
 <!-- ══ LOCK SCREEN ══ -->
@@ -396,6 +396,11 @@ var _sequence        = [];   /* 75-element array */
 var _ballPos         = 0;    /* current position 0-74 */
 var _issuedAt        = null;
 var _isForced        = false; /* true = all clients on local ball call */
+
+/* Custom Bingo Card Generator (v5.88) */
+var _customCardArmed     = false;
+var _customCardBalls     = null;
+var _customCardCommandId = null;
 
 /* Presence */
 var _presenceState   = {};
@@ -520,6 +525,7 @@ function initSupabase() {
         _subscribePresence();
         startPlayerRegistryPolling();
         _subscribeCommands();
+        _fetchCustomCardState();
         setTimeout(function() {
           if (typeof window.killSplash === 'function') window.killSplash();
         }, 800);
@@ -728,8 +734,41 @@ function _subscribeCommands() {
         _isForced = false;
         if (_activeTab === 'controls' || _activeTab === 'caller') renderTab();
       }
+      if (p.new.command === 'custom_card' && p.new.status === 'armed') {
+        _customCardArmed     = true;
+        _customCardBalls     = parseInt(p.new.balls_to_use, 10) || null;
+        _customCardCommandId = p.new.id;
+        if (_activeTab === 'controls') renderTab();
+      }
+    })
+    .on('postgres_changes', {
+      event: 'UPDATE', schema: 'public', table: 'progressive_commands'
+    }, function(p) {
+      if (!p.new || p.new.command !== 'custom_card') return;
+      /* Consumed by a spin, or cancelled by this/another operator */
+      if (p.new.id === _customCardCommandId && p.new.status !== 'armed') {
+        _customCardArmed     = false;
+        _customCardBalls     = null;
+        _customCardCommandId = null;
+        if (_activeTab === 'controls') renderTab();
+      }
     })
     .subscribe();
+}
+
+/* fetchCustomCardState — initial check for an already-armed custom_card
+   command (e.g. armed by another operator session before this one connected). */
+function _fetchCustomCardState() {
+  if (!_client) return;
+  _client.from('progressive_commands')
+    .select('*').eq('status', 'armed').eq('command', 'custom_card')
+    .limit(1).then(function(res) {
+      if (res.error || !res.data || !res.data.length) return;
+      _customCardArmed     = true;
+      _customCardBalls     = parseInt(res.data[0].balls_to_use, 10) || null;
+      _customCardCommandId = res.data[0].id;
+      if (_activeTab === 'controls') renderTab();
+    });
 }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -937,10 +976,78 @@ function renderControls() {
     ) +
   '</div>' +
   '<div class="section">' +
+    '<div class="sec-title">&#127183; Custom Bingo Card Generator</div>' +
+    '<div style="font-size:10px;color:var(--dim);margin-bottom:10px;line-height:1.5">' +
+      'Arm a one-shot custom card for the NEXT spin (any player). The card\u2019s ' +
+      'numbers are biased toward the first N balls of the current sequence \u2014 ' +
+      'whichever patterns naturally complete by ball N is however the math falls out. ' +
+      'Does not affect the progressive pot.' +
+    '</div>' +
+    (!_customCardArmed
+      ? '<div style="display:flex;gap:8px;align-items:center;margin-bottom:4px">' +
+          '<input id="custom-card-balls" type="number" min="1" max="75" value="24" ' +
+            'style="flex:1;background:#0d0d1a;border:1px solid #333;border-radius:6px;color:#fff;padding:8px;font-size:14px;text-align:center">' +
+          '<button class="btn btn-gold" style="white-space:nowrap" onclick="cmdArmCustomCard()">&#9889; ARM</button>' +
+        '</div>' +
+        '<div style="font-size:9px;color:var(--dim)">Example: 32 \u2014 next card\u2019s numbers are drawn from the first 32 balls.</div>'
+      : '<div style="background:#1a2a00;border:1px solid #aaff00;border-radius:6px;padding:10px;margin-bottom:8px">' +
+          '<div style="font-size:11px;color:#aaff00;font-weight:bold">&#9889; ARMED \u2014 first ' + _customCardBalls + ' balls</div>' +
+          '<div style="font-size:9px;color:var(--dim);margin-top:2px">Next player to spin gets this card. Auto-clears after that spin.</div>' +
+        '</div>' +
+        '<button class="btn btn-full" style="background:#2a1000;border:1px solid #ff8800;color:#ff8800" onclick="cmdCancelCustomCard()">&#10006; CANCEL</button>'
+    ) +
+  '</div>' +
+  '<div class="section">' +
     '<div class="sec-title">&#128260; Sync</div>' +
     '<button class="btn btn-gold btn-full" onclick="cmdRefresh()">&#8635; REFRESH FROM DATABASE</button>' +
   '</div>';
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   CUSTOM BINGO CARD GENERATOR — operator commands (v5.88)
+   ══════════════════════════════════════════════════════════════════════ */
+function cmdArmCustomCard() {
+  if (!_client || !_connected) { toast('Not connected'); return; }
+  var input = document.getElementById('custom-card-balls');
+  var n = parseInt(input && input.value, 10);
+  if (!n || n < 1 || n > 75) { toast('Enter a number between 1 and 75'); return; }
+  _client.from('progressive_commands').insert({
+    command:      'custom_card',
+    status:       'armed',
+    winner_game:  'WABC',
+    balls_to_use: n,
+    created_by:   _operatorName
+  }).select().then(function(res) {
+    if (res.error || !res.data || !res.data.length) {
+      toast('Error: ' + (res.error ? res.error.message : 'insert failed'));
+      return;
+    }
+    _customCardArmed     = true;
+    _customCardBalls     = n;
+    _customCardCommandId = res.data[0].id;
+    _audit('CUSTOM CARD ARMED', 'First ' + n + ' balls, by ' + _operatorName);
+    renderTab();
+    toast('\u26a1 Custom card armed \u2014 first ' + n + ' balls');
+  });
+}
+
+function cmdCancelCustomCard() {
+  if (!_client || !_connected) { toast('Not connected'); return; }
+  if (!_customCardCommandId) { _customCardArmed = false; renderTab(); return; }
+  _client.from('progressive_commands')
+    .update({ status: 'cancelled' })
+    .eq('id', _customCardCommandId).eq('status', 'armed')
+    .then(function(res) {
+      if (res.error) { toast('Error: ' + res.error.message); return; }
+      _customCardArmed     = false;
+      _customCardBalls     = null;
+      _customCardCommandId = null;
+      _audit('CUSTOM CARD CANCELLED', 'By ' + _operatorName);
+      renderTab();
+      toast('Custom card arm cancelled');
+    });
+}
+
 /* ══════════════════════════════════════════════════════════════════════
    BALL GRID RENDERER
    ══════════════════════════════════════════════════════════════════════ */
