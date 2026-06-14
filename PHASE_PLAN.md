@@ -170,3 +170,11 @@ Same one-shot-subscribe presence bug as games/Progressive Operator — fixed
 with exponential backoff retry (2s->30s cap). Removed noisy [WABC-DEBUG]
 console.log calls from presence sync (no longer needed for diagnosis).
 Cache bust: wabc-v1.15
+
+### v1.16 — Presence Heartbeat (zombie-channel fix)
+Same hypothesis as the games: a zombie presence channel
+(silent socket reconnect with no CHANNEL_ERROR/CLOSED) could leave this
+tool unable to see other presences with no visible error. Added a 60s
+heartbeat: fully removeChannel + recreate the presence channel on a fixed
+interval.
+Cache bust: wabc-v1.16
