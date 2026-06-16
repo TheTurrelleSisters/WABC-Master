@@ -1,138 +1,102 @@
-# WABC Master — Phase Plan
-## Repo: WABC-Master
+# Progressive Operator — Phase Plan
+## Repo: progressive_operator
 ## Source of truth: zip archives. GitHub is behind.
 
 ---
 
-## Current Version: v1.5 (cache: wabc-v1.5)
+## Current Version: v3.8 (cache: prog-op-v3.8)
 
 ---
 
 ## Repo Overview
-Wide Area Ball Caller operator tool. VIEW ONLY. Shows the authoritative 75-ball sequence from DB that all players use. Shows connected player count. One functional control: Force All Players to Local.
-
-## WABC Design Rules (permanent — never violate)
-- Ball sequence lives in ball_call table, game_id='WABC'
-- Sequence auto-renews when ball 75 is called OR Cover All occurs (triggered by games, not operator)
-- Ball position is per-player local only — NEVER written to DB, NEVER broadcast
-- WABC tool shows DB sequence snapshot — not live player positions
-- Only operator control: Force Local (disconnects all players from WABC)
-- No manual NEW CALL button — sequence is fully automatic
+WAP Progressive Jackpot operator controller PWA. PIN-protected. Manages the wide-area progressive pot, monitors connected players, force-arms jackpots, broadcasts messages.
 
 ---
 
 ## Phase History
 
-### v1.0 — Initial Build
-- Splash + PIN screen
-- Caller tab: ball grid display
-- Status tab: connected players
-- Controls tab: Force Local, Restore Wide, New Call button
+### v2.4 — Foundation
+- Splash + PIN + username
+- Dashboard: pot value, contrib rate, hit count, connected devices, armed status
+- Settings: seed, ceiling, contrib rate, trigger odds
+- History: hit history + operator audit log
+- Force tab: arm jackpot, test contribution
+- Messages: broadcast to all players
+- 15 bugs fixed (BUG-01 through BUG-16)
 
-### v1.1 — Presence Fix + WABC Code Removal from Progressive Operator
-- Removed RESET POS button
-- Presence re-sync fixed
-- wabc_operator excluded from player presence count
-
-### v1.2 — Architecture Correction
-- Removed cmdNewCall() entirely — sequence is auto-managed by games
-- Removed pos broadcast listener — ball position is per-player local, never reported
-- Ball grid now shows full 75-ball sequence always visible (yellow=1-40, white=41-75)
-- No position dimming — WABC tool does not track player positions
-- renderCaller updated: shows connected players + sequence issued time
-- _updateBallHeader updated: shows sequence metadata not position
-- Controls tab: only Force Local / Restore Wide remain
-- Cache bust: wabc-v1.2
+### v3.8 — WABC Removal + Player Tracking
+- All WABC code removed from Settings tab
+- presence filter excludes wabc_operator and floor_operator
+- Player active/inactive tracking fixed (updateLastSpin() added)
+- Splash version corrected to v3.8
+- Cache bust: prog-op-v3.8
 
 ---
 
 ## Pending
-- [ ] Connected player count verified live with multiple game clients
-- [ ] Force Local tested end-to-end — games switch to local, badge updates
-- [ ] Restore Wide tested — games reconnect to WABC sequence
-- [ ] New sequence auto-display when games trigger renewal at ball 75
+- [ ] Connected players showing correctly with multiple game clients
+- [ ] Force jackpot end-to-end test with v5.51 armAndClaim fix
+- [ ] progressive_hits history verified writing from games
+- [ ] Broadcast messages verified received by game clients
 
 ---
 
 ## Rules
 - ES5 only
-- View only tool — no game state modifications except Force Local/Restore Wide
+- All logic inline in index.html — progressive.js in repo is dead code
 - Cache bust on every single build
 
-### v1.3 — PIN Pad Fix
-- Fixed killSplash using cssText += which was unreliable on Samsung Browser
-- Now sets each style property individually (opacity, pointerEvents, touchAction)
-- Fixes PIN pad unresponsive / lockup after splash on Samsung devices
-- Cache bust: wabc-v1.3
+### v3.10 — SDK Cleanup + Splash Fix (CORRUPTED — rebuilt from source)
+- File was corrupted during duplicate splash removal — entire HTML embedded in killSplash
+- Rebuilt from original v2.7 source and reapplied all changes cleanly
+- killSplash fixed to remove splash from DOM (Samsung Browser fix)
+- splashError() added — stops loading bar, shows red error + RETRY button
+- All setTimeout(initSupabase) retry loops replaced with splashError()
+- SDK cleanup added — clears stale window.supabase before each retry
+- Cache bust: prog-op-v3.10
 
-### v1.4 — PIN Pad Fix Take 2
-- killSplash now removes splash element from DOM entirely instead of hiding it
-- Eliminates any possibility of invisible splash overlay blocking PIN pad touches
-- Previous approach (opacity:0 + display:none) was still leaving element in DOM
-  on Samsung Browser which intercepted touch events despite being invisible
-- Cache bust: wabc-v1.4
-
-### v1.5 — Splash + PIN Fix Final
-- Splash animation and connection status preserved
-- Splash fades out (0.8s opacity transition) then removed from DOM
-- Removal happens AFTER fade completes — no visible difference to user
-- Fixed duplicate id="loading-text" attribute on splash status element
-- Cache bust: wabc-v1.5
-
-### v1.6 — Splash Error + Retry + DOM Removal
-- splashError() added — red error state + RETRY button on connection failure
-- All setTimeout retry loops removed — user must press RETRY
-- killSplash removes splash from DOM entirely (not just hidden)
-- Duplicate splash div removed from Progressive Operator (pre-existing issue)
-- Cache bust: wabc-v1.6
-
-### v1.7 — SDK Cleanup
-- window.supabase cleared before each retry to prevent stale SDK instance
-- window._sbScriptEl tracks script element for proper cleanup
-- Cache bust: wabc-v1.7
-
-### v1.8 — maybeSingle() Fix
-- _fetchBallCallState was using .single() which throws error when WABC row missing
-- Changed to .maybeSingle() — handles missing row gracefully, creates it automatically
-- Added .catch() handler for network errors
-- Cache bust: wabc-v1.8
+### v3.11 — WABC Section Fully Removed
+- WABC Settings section was still present after rebuild (renderBallCaller, _renderBallGrid)
+- Removed: renderBallCaller(), _renderBallGrid(), issueNewBallCall()
+- Removed: resetBallPos(), forceLocalBall(), restoreWideBall(), loadBallCallState()
+- Removed: _ballCallState var, _ballCallerChannel subscription, loadBallCallState() call in showTab
+- Progressive Operator now has zero WABC code — WABC tool handles everything
+- Cache bust: prog-op-v3.11
 
 ---
 
-## Current Version: v1.8 (cache: wabc-v1.8)
+## Current Version: v3.11 (cache: prog-op-v3.11)
 
 ## Pending
-- [ ] Confirm WABC connects and shows LIVE
-- [ ] Ball grid displays correctly with yellow/white zones
-- [ ] Player count updates when games connect
-- [ ] Force Local tested end-to-end
+- [ ] Verify WABC section gone on device
+- [ ] Connected players showing correctly
+- [ ] Force jackpot end-to-end test
+- [ ] progressive_hits records writing correctly
 
-### v1.9 — CRITICAL: Legacy JWT Anon Key Fix
+### v3.12 — CRITICAL: Legacy JWT Anon Key Fix
 - Same fix — sb_publishable_ broken for Realtime WebSocket
-- Cache bust: wabc-v1.9
+- Cache bust: prog-op-v3.12
 
-### v1.10 — CRITICAL: Fixed Page-Breaking Syntax Error
-- Uncaught SyntaxError: Unexpected identifier 'Arial' on line 787
-- 'Arial Black' used literal single quotes inside a single-quoted JS string,
-  terminating the string early and breaking the ENTIRE script block
-- This is why initSupabase() NEVER RAN — splash was stuck on "Connecting"
-  forever because the JS parser failed before any code executed
-- Fixed: 'Arial Black' -> &quot;Arial Black&quot; in the players-connected stat card
-- Removed debug console.log statements after diagnosis
-- Cache bust: wabc-v1.10
+### v3.13 — Bug A: Player Count Exclusion Fix
+- _syncPresence/_updatePresenceCounts/connected-list filters now also exclude
+  'wabc_operator' and 'floor_operator' (previously only excluded 'operator').
+  WABC and/or Floor Manager being open no longer inflate Progressive
+  Operator's connected-player count.
+- Cache bust: prog-op-v3.13
 
-### v1.11 — Bug A: Player Count Exclusion Fix
-- _updatePlayerCount and renderCaller/renderStatus now also exclude
-  'floor_operator' (previously only excluded 'operator' and 'wabc_operator').
-  Floor Manager being open no longer inflates WABC's connected-player count.
-- Cache bust: wabc-v1.11
-
-### v1.12 — CRITICAL: Channel Reconnect Loop Fixed (likely root cause of 0-players)
-Same fix as StrayPups v5.75 — wabc.js _subscribe() now awaits removeChannel()
-before rejoining the 'wabc-ballpos' topic, fixing an infinite
-CHANNEL_ERROR/CLOSED reconnect loop that was destabilizing the entire
-websocket (and therefore presence-lobby too).
-Cache bust: wabc-v1.12
+### v3.14 — Fixed Missing _gameName() Function
+- _gameName() was called in 6 places (Realtime notification toasts, hit
+  history, presence player list) but NEVER DEFINED — every
+  progressive_commands/progressive_hits Realtime event threw
+  "ReferenceError: _gameName is not defined", crashing those callbacks.
+- Added _gameName() + PROG_GAME_TITLES lookup table (matches
+  progressive.js in game repos).
+- SEPARATE DATABASE ISSUE FOUND (not fixable from this repo): the
+  progressive_hit RPC function does not exist in Supabase at all
+  ("Could not find the function public.progressive_hit(reset_to) in the
+  schema cache"). This is the root cause of the pot never resetting after
+  jackpot wins. SQL to create it provided to Sasha for Supabase SQL Editor.
+- Cache bust: prog-op-v3.14
 
 ### Service Worker + Supabase Client Hardening (this batch)
 - service-worker.js fetch handler rewritten with proper guards:
@@ -162,22 +126,33 @@ broadcasting DIFFERENT ball-call sequences again (regression) — possible
 WABC/local-vs-wide-area switching issue. To be investigated next session.
 
 
-### v1.14 — Removed "Ball Position" from Status tab (cosmetic, per Sasha)
-Cache bust: wabc-v1.14
+### v3.16 — Hit Stats Cards, Hit Breakdown, Presence Retry Fix
+- New dashboard stat cards: "Since Last Hit" and "Avg Time Between Hits"
+  (computed from loaded _hits array).
+- New "Hit Breakdown" section: counts of Force Jackpot / Corporal Stripes /
+  Lazy-T (and Other) from the last 50 hits.
+- PRESENCE FIX (root cause of "Connected: 0" since early builds): same
+  one-shot-subscribe bug as the games — operator's own presence subscribe
+  never retried on CHANNEL_ERROR/TIMED_OUT/CLOSED. Now retries with
+  exponential backoff (2s->30s cap).
+- NOTE: progressive_operator/progressive.js is a STALE UNUSED FILE (not
+  referenced by index.html) — candidate for removal, pending confirmation.
+- Cache bust: prog-op-v3.16
 
-### v1.15 — Presence Retry Fix
-Same one-shot-subscribe presence bug as games/Progressive Operator — fixed
-with exponential backoff retry (2s->30s cap). Removed noisy [WABC-DEBUG]
-console.log calls from presence sync (no longer needed for diagnosis).
-Cache bust: wabc-v1.15
+### v3.17 — Removed Hit Breakdown Section
+Per Sasha: Corporal Stripes isn't a Progressive-jackpot concept, so
+categorizing hits by Force Jackpot/Corporal Stripes/Lazy-T on this
+dashboard didn't make sense. Removed the "Hit Breakdown" section entirely.
+"Since Last Hit" and "Avg Time Between Hits" cards (v3.16) are kept.
+Cache bust: prog-op-v3.17
 
-### v1.16 — Presence Heartbeat (zombie-channel fix)
+### v3.18 — Presence Heartbeat (zombie-channel fix)
 Same hypothesis as the games: a zombie presence channel
 (silent socket reconnect with no CHANNEL_ERROR/CLOSED) could leave this
 tool unable to see other presences with no visible error. Added a 60s
 heartbeat: fully removeChannel + recreate the presence channel on a fixed
 interval.
-Cache bust: wabc-v1.16
+Cache bust: prog-op-v3.18
 
 ### REVERT — Presence Heartbeat removed (caused console flood + lockup)
 v3.18/v1.16/v1.7's 60s heartbeat caused console flooding and a system
@@ -187,7 +162,7 @@ REVERTED ENTIRELY — back to one-shot subscribe + error-triggered retry.
 "0 players with active games" remains OPEN.
 Cache bust: see service-worker.js
 
-### v1.18 — Connected Players now from player_registry
+### v3.20 — Connected Players now from player_registry
 Connected/Inactive counts and player lists now read from
 player_registry (durable DB table) instead of presence-lobby (ephemeral
 Realtime state, unreliable all session). "Connected" = last_seen within
@@ -195,32 +170,13 @@ Realtime state, unreliable all session). "Connected" = last_seen within
 every 5s. Requires the NEW touch_player_last_seen SQL RPC (see games
 PHASE_PLAN v5.84) and game build v5.84+ to keep last_seen fresh for
 nickname-less players too.
-Cache bust: wabc-v1.18
+Cache bust: prog-op-v3.20
 
 
-### v1.19 — Custom Bingo Card Generator (NEW feature)
-- New "Custom Bingo Card Generator" section in the Controls tab.
-  Operator enters N (1-75, default 24) and taps ARM. Writes a one-shot
-  row to progressive_commands: { command:'custom_card', status:'armed',
-  winner_game:'WABC', balls_to_use:N, created_by:<operator> }.
-- When armed, the panel shows "ARMED — first N balls" with a CANCEL
-  button (sets status='cancelled').
-- Consumed automatically by whichever player (either game) spins next:
-  their client calls Progressive.getCustomCardBalls() ->
-  consumeCustomCard() (sets status='consumed'), then generates that
-  spin's card via genBiasedBingoCard(N) — numbers biased toward the
-  first N balls of the current sequence. Whatever patterns naturally
-  complete by ball N is however the math falls out — no progressive-pot
-  or claim logic attached, purely "deal this card to the next spinner."
-- _subscribeCommands extended (INSERT + UPDATE) to track
-  _customCardArmed/_customCardBalls/_customCardCommandId; new
-  _fetchCustomCardState() checks for an already-armed row on connect
-  (e.g. armed by another operator session before this one connected).
-
-SQL (run before deploy, see add_custom_card_column.sql, shared with
-games PHASE_PLAN v5.88):
-  ALTER TABLE progressive_commands ADD COLUMN IF NOT EXISTS balls_to_use integer;
-  (also verify command/status CHECK constraints allow 'custom_card' /
-  'consumed' / 'cancelled')
-
-Cache bust: wabc-v1.19
+### v3.21 — Friendly game-name update (Stray Pups / Turrelle Sisters)
+- PROG_GAME_TITLES: 'StrayPups Big Munny $1'/'$5' -> 'Stray Pups Big Munny
+  $1'/'$5'; 'turrelle': 'Turrelle Sisters' -> 'The Turrelle Sisters Big
+  Munny'. Companion rename in both bingo games (v5.87) and tsbigmunny
+  (v8.2.2) -- kept in sync manually per the existing comment at this map's
+  definition.
+- No other changes. Cache bust: v3.21.

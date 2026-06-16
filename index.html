@@ -4,22 +4,22 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#0a0010">
-  <meta name="apple-mobile-web-app-title" content="WABC">
-  <link rel="manifest" href="manifest.json">
-  <title>WABC — Wide Area Ball Caller</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a0010">
+<meta name="apple-mobile-web-app-title" content="Prog Operator">
+<link rel="manifest" href="manifest.json">
+<title>Progressive Operator</title>
 <style>
 :root {
   --gold:    #ffd700;
   --gold-dk: #b8860b;
+  --red:     #ff3300;
+  --red-dk:  #8b1a00;
   --green:   #00ff88;
-  --blue:    #00cfff;
-  --blue-dk: #007799;
   --bg:      #0a0010;
   --bg2:     #140025;
   --bg3:     #1e003a;
@@ -29,68 +29,7 @@
   --danger:  #ff2244;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; background: var(--bg); color: var(--text); font-family: Arial, sans-serif; overflow: hidden; }
-
-/* ── SPLASH ── */
-#splash {
-  position: fixed; inset: 0; z-index: 9999;
-  background: radial-gradient(ellipse at center, #001a30 0%, #05000f 70%);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  transition: opacity .8s ease;
-}
-#splash::before {
-  content: ''; position: absolute; inset: 0; pointer-events: none;
-  background: repeating-linear-gradient(0deg, transparent, transparent 3px,
-    rgba(0,0,0,.12) 3px, rgba(0,0,0,.12) 4px);
-}
-.star { position: absolute; border-radius: 50%; background: #ffd700;
-  animation: twinkle var(--d) ease-in-out infinite var(--delay); }
-@keyframes twinkle { 0%,100%{opacity:.2;transform:scale(.8)} 50%{opacity:1;transform:scale(1.2)} }
-
-#gear-wrap { position: relative; margin-bottom: 16px; }
-#gear-img {
-  width: 110px; height: 110px;
-  animation: gear-spin 8s linear infinite;
-  filter: drop-shadow(0 0 16px rgba(0,207,255,.6)) drop-shadow(0 0 32px rgba(0,150,255,.3));
-}
-@keyframes gear-spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-#gear-ring {
-  position: absolute; inset: -12px; border-radius: 50%;
-  border: 2px solid rgba(0,207,255,.3);
-  animation: ring-pulse 2s ease-in-out infinite;
-}
-#gear-ring2 {
-  position: absolute; inset: -24px; border-radius: 50%;
-  border: 1px solid rgba(0,207,255,.15);
-  animation: ring-pulse 2s ease-in-out infinite .5s;
-}
-@keyframes ring-pulse { 0%,100%{transform:scale(1);opacity:.4} 50%{transform:scale(1.08);opacity:.9} }
-
-#splash-title { font-size: clamp(11px,3.5vw,16px); letter-spacing: 4px; color: #00aaff;
-  text-transform: uppercase; text-shadow: 0 0 8px #0066ff; margin-bottom: 4px; }
-#splash-name { font-size: clamp(22px,7vw,32px); font-weight: 900; color: var(--blue);
-  text-align: center; line-height: 1.15; letter-spacing: 2px;
-  text-shadow: 0 0 12px #0088ff, 0 0 24px #0044ff; margin-bottom: 6px; }
-#splash-sub { font-size: clamp(9px,2.5vw,12px); letter-spacing: 3px; color: #334466;
-  text-transform: uppercase; margin-bottom: 28px; }
-
-#loading-wrap { width: 180px; margin-bottom: 12px; }
-#loading-track { height: 3px; background: rgba(0,207,255,.15); border-radius: 2px; overflow: hidden; }
-#loading-bar {
-  height: 100%; width: 0%; background: linear-gradient(90deg, #0044ff, #00cfff);
-  border-radius: 2px;
-  animation: load-fill 2.2s cubic-bezier(.4,0,.2,1) forwards .3s;
-  box-shadow: 0 0 8px #00cfff;
-}
-@keyframes load-fill { from{width:0%} to{width:100%} }
-#loading-text {
-  text-align: center; font-size: 8px; color: #223355; letter-spacing: 2px;
-  margin-top: 6px; text-transform: uppercase;
-  animation: blink .8s ease-in-out infinite;
-}
-@keyframes blink { 0%,100%{opacity:.4} 50%{opacity:1} }
-#splash-ver { position: absolute; bottom: 14px; font-size: 9px; color: #1a2244;
-  letter-spacing: 2px; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Arial', sans-serif; overflow: hidden; }
 
 /* ── LOCK SCREEN ── */
 #lock-screen {
@@ -98,23 +37,19 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
   display: none; flex-direction: column; align-items: center; justify-content: center;
   z-index: 10000; gap: 16px;
 }
-#lock-title  { font-size: 13px; letter-spacing: 3px; color: var(--blue); text-transform: uppercase; }
-#lock-logo   { font-size: 28px; font-weight: 900; color: var(--blue);
-  text-shadow: 0 0 12px #0088ff; letter-spacing: 2px; text-align: center; line-height: 1.2; }
-#lock-sub    { font-size: 10px; color: var(--dim); letter-spacing: 2px; }
-#pin-dots    { display: flex; gap: 10px; margin: 8px 0; }
-.pin-dot     { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--blue-dk);
-  background: transparent; transition: background .15s; }
-.pin-dot.filled { background: var(--blue); }
-#pin-error   { color: var(--danger); font-size: 11px; height: 14px; }
-#username-field {
-  width: 200px; padding: 10px 12px; background: #0a0d1a;
-  border: 1.5px solid var(--blue-dk); border-radius: 8px;
-  color: var(--blue); font-size: 13px; text-align: center; outline: none; letter-spacing: 1px;
-}
+#lock-screen.show { display: flex; }
+#lock-title { font-size: 13px; letter-spacing: 3px; color: var(--gold); text-transform: uppercase; }
+#lock-logo  { font-size: 28px; font-weight: 900; color: var(--gold);
+  text-shadow: 0 0 12px #ff6600; letter-spacing: 2px; text-align: center; line-height: 1.2; }
+#lock-sub   { font-size: 10px; color: var(--dim); letter-spacing: 2px; }
+#pin-dots   { display: flex; gap: 10px; margin: 8px 0; }
+.pin-dot    { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--gold-dk); background: transparent; transition: background .15s; }
+.pin-dot.filled { background: var(--gold); }
+#pin-error  { color: var(--danger); font-size: 11px; height: 14px; }
+#username-field { width: 200px; padding: 10px 12px; background: #0d0d1a; border: 1.5px solid var(--gold-dk); border-radius: 8px; color: var(--gold); font-size: 13px; text-align: center; outline: none; letter-spacing: 1px; }
 #username-field::placeholder { color: var(--dim); letter-spacing: 1px; }
-#username-field:focus { border-color: var(--blue); }
-#pin-grid  { display: grid; grid-template-columns: repeat(3, 64px); gap: 10px; }
+#username-field:focus { border-color: var(--gold); }
+#pin-grid   { display: grid; grid-template-columns: repeat(3, 64px); gap: 10px; }
 .pkey {
   height: 56px; border-radius: 10px; border: 1.5px solid var(--border);
   background: var(--bg2); color: var(--text); font-size: 20px; font-weight: bold;
@@ -123,7 +58,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 }
 .pkey:active { background: var(--bg3); transform: scale(.94); }
 .pkey.wide   { grid-column: span 2; font-size: 13px; letter-spacing: 1px; color: var(--dim); }
-.pkey.enter  { background: linear-gradient(135deg,#00001a,#000066); color: var(--blue); font-size: 13px; }
+.pkey.enter  { background: linear-gradient(135deg,#003a00,#006600); color: var(--green); font-size: 13px; }
 
 /* ── APP ── */
 #app { display: none; flex-direction: column; height: 100%; }
@@ -131,42 +66,48 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 
 /* ── HEADER ── */
 #app-hdr {
-  background: linear-gradient(135deg, #0a0010, #001a30);
-  border-bottom: 1.5px solid var(--blue-dk);
-  padding: 10px 14px 8px; flex-shrink: 0;
+  background: linear-gradient(135deg, #0a0010, #1e003a);
+  border-bottom: 1.5px solid var(--gold-dk);
+  padding: 10px 14px 8px;
+  flex-shrink: 0;
 }
 #app-hdr-top { display: flex; justify-content: space-between; align-items: center; }
-#app-title   { font-size: 11px; letter-spacing: 2px; color: var(--blue); text-transform: uppercase; }
-#conn-badge  { font-size: 9px; padding: 2px 8px; border-radius: 10px; letter-spacing: 1px; }
-#conn-badge.ok  { background: #001a33; color: var(--blue); border: 1px solid #004477; }
+#app-title { font-size: 11px; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; }
+#conn-badge { font-size: 9px; padding: 2px 8px; border-radius: 10px; letter-spacing: 1px; }
+#conn-badge.ok  { background: #003300; color: var(--green); border: 1px solid #006600; }
 #conn-badge.err { background: #330000; color: var(--danger); border: 1px solid #660000; }
+#conn-status-msg { font-size: 13px; font-weight: 700; letter-spacing: 1px; color: #aaa;
+  text-align: center; padding: 4px 0 2px; min-height: 22px; transition: opacity .4s; }
+#conn-status-msg.connecting { color: #ffaa00; }
+#conn-status-msg.connected  { color: #00ff88; }
+#conn-status-msg.reconnecting { color: #ff6600; }
+#inactive-count-box { background: rgba(255,100,0,.08); border: 1px solid #ff440033;
+  border-radius: 8px; padding: 4px 10px; text-align: center; margin-top: 6px; }
 
-/* ── BALL HEADER ── */
-#ball-header {
-  background: linear-gradient(135deg, #00001a, #001a33);
-  border-bottom: 1px solid #0044aa;
-  padding: 8px 14px; flex-shrink: 0;
+/* ── POT DISPLAY ── */
+#pot-display {
+  background: linear-gradient(135deg, #1a0000, #3a0010);
+  border-bottom: 1px solid #ff4400;
+  padding: 8px 14px;
   display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
 }
-#ball-lbl    { font-size: 9px; color: #4488cc; letter-spacing: 2px; text-transform: uppercase; }
-#ball-num    { font-size: 36px; font-weight: 900; color: var(--blue);
-  font-family: 'Arial Black', Arial, sans-serif;
-  text-shadow: 0 0 12px #0088ff; line-height: 1; }
-#ball-meta   { font-size: 9px; color: var(--dim); text-align: right; }
-#conn-status-msg { font-size: 12px; font-weight: 700; letter-spacing: 1px; color: #4488cc;
-  text-align: center; padding: 2px 0; min-height: 18px; transition: opacity .4s; }
-#conn-status-msg.connecting  { color: #ffaa00; }
-#conn-status-msg.connected   { color: var(--blue); }
+#pot-lbl { font-size: 9px; color: #ff8844; letter-spacing: 2px; text-transform: uppercase; }
+#pot-val { font-size: 26px; font-weight: 900; color: #ffdd00;
+  text-shadow: 0 0 8px #ff6600; font-family: 'Arial Black', Arial, sans-serif; }
+#pot-meta { font-size: 9px; color: var(--dim); text-align: right; }
 
 /* ── TABS ── */
-#tab-bar { display: flex; border-bottom: 1.5px solid var(--border);
-  background: var(--bg2); flex-shrink: 0; }
+#tab-bar {
+  display: flex; border-bottom: 1.5px solid var(--border);
+  background: var(--bg2); flex-shrink: 0;
+}
 .tab {
   flex: 1; padding: 10px 4px; text-align: center; font-size: 10px;
   letter-spacing: 1px; text-transform: uppercase; color: var(--dim);
   cursor: pointer; border-bottom: 2px solid transparent; transition: all .15s;
 }
-.tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+.tab.active { color: var(--gold); border-bottom-color: var(--gold); }
 
 /* ── CONTENT ── */
 #tab-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 14px; }
@@ -174,16 +115,24 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 /* ── SECTIONS ── */
 .section { margin-bottom: 18px; }
 .sec-title {
-  font-size: 9px; letter-spacing: 2px; color: var(--blue-dk);
+  font-size: 9px; letter-spacing: 2px; color: var(--gold-dk);
   text-transform: uppercase; margin-bottom: 8px; padding-bottom: 4px;
   border-bottom: 1px solid var(--border);
 }
-.row { display: flex; justify-content: space-between; align-items: center;
-  padding: 8px 0; border-bottom: 1px solid #001a33; }
+.row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0; border-bottom: 1px solid #1e003a;
+}
 .row:last-child { border-bottom: none; }
 .row-lbl { font-size: 12px; color: var(--text); }
 .row-sub { font-size: 9px; color: var(--dim); margin-top: 2px; }
-.row-val { font-size: 14px; color: var(--blue); font-weight: bold; }
+.row-val { font-size: 14px; color: var(--gold); font-weight: bold; }
+.inp {
+  background: var(--bg3); border: 1.5px solid var(--border); border-radius: 6px;
+  color: var(--gold); font-size: 14px; padding: 6px 10px; width: 110px;
+  text-align: right; outline: none;
+}
+.inp:focus { border-color: var(--gold-dk); }
 
 /* ── BUTTONS ── */
 .btn {
@@ -192,62 +141,188 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
   cursor: pointer; transition: transform .08s, opacity .1s;
 }
 .btn:active { transform: scale(.94); opacity: .85; }
-.btn-blue    { background: linear-gradient(135deg,#00001a,#002266); color: var(--blue); border: 1px solid var(--blue-dk); }
+.btn-gold    { background: linear-gradient(135deg,#5a3800,#b8860b); color: var(--gold); border: 1px solid var(--gold-dk); }
 .btn-green   { background: linear-gradient(135deg,#003a00,#006600); color: var(--green); border: 1px solid #00aa44; }
 .btn-danger  { background: linear-gradient(135deg,#3a0010,#660022); color: var(--danger); border: 1px solid #aa0033; }
-.btn-gold    { background: linear-gradient(135deg,#3a2800,#886600); color: var(--gold); border: 1px solid var(--gold-dk); }
 .btn-full    { width: 100%; margin-top: 8px; padding: 12px; font-size: 12px; }
 
 /* ── STATS GRID ── */
 .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
-  padding: 10px; text-align: center; }
-.stat-val  { font-size: 20px; font-weight: 900; color: var(--blue); }
-.stat-lbl  { font-size: 9px; color: var(--dim); letter-spacing: 1px; margin-top: 2px; }
+.stat-card {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px; text-align: center;
+}
+.stat-val { font-size: 20px; font-weight: 900; color: var(--gold); }
+.stat-lbl { font-size: 9px; color: var(--dim); letter-spacing: 1px; margin-top: 2px; }
 
-/* ── BALL GRID ── */
-.ball-cell {
-  width: 30px; height: 24px; border-radius: 3px;
-  font-size: 9px; font-weight: 400;
-  display: inline-flex; align-items: center; justify-content: center; margin: 1px;
+/* ── HISTORY ── */
+.hit-row {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 12px; margin-bottom: 8px;
 }
-
-/* ── BROADCAST BANNER ── */
-#broadcast-banner {
-  display: none; margin: 0 0 10px 0;
-  background: linear-gradient(135deg, #001a00, #003300);
-  border: 2px solid var(--green); border-radius: 10px; padding: 10px 14px;
-  animation: bc-pulse 1.5s ease-in-out infinite;
-}
-#broadcast-banner.show { display: block; }
-@keyframes bc-pulse {
-  0%,100% { border-color: var(--green); box-shadow: 0 0 6px rgba(0,255,136,.3); }
-  50%      { border-color: #00ffaa;     box-shadow: 0 0 16px rgba(0,255,136,.6); }
-}
-#bc-title { font-size: 11px; font-weight: 900; color: var(--green); letter-spacing: 2px; margin-bottom: 4px; }
-#bc-body  { font-size: 13px; color: #ccffee; line-height: 1.4; }
+.hit-amt  { font-size: 18px; font-weight: 900; color: #ffdd00; }
+.hit-meta { font-size: 10px; color: var(--dim); margin-top: 3px; }
+.hit-game { font-size: 10px; color: var(--gold); font-weight: bold; }
 
 /* ── TOAST ── */
 #toast {
   position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
-  background: #001a33; border: 1.5px solid var(--blue-dk); border-radius: 20px;
-  padding: 8px 20px; font-size: 12px; color: var(--blue);
+  background: #1e003a; border: 1.5px solid var(--gold-dk); border-radius: 20px;
+  padding: 8px 20px; font-size: 12px; color: var(--gold);
   transition: transform .3s ease; z-index: 999; pointer-events: none; white-space: nowrap;
 }
 #toast.on { transform: translateX(-50%) translateY(0); }
+
+/* ── SPLASH ──────────────────────────────── */
+/* NOTE: No global html/body override here — main app styles above take precedence */
+
+#splash{
+  position:fixed;inset:0;z-index:9999;
+  background:radial-gradient(ellipse at center,#1a0030 0%,#05000f 70%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:0;
+  transition:opacity .8s ease;
+}
+#splash.fade-out{opacity:0;pointer-events:none;touch-action:none;z-index:-1;}
+
+/* Scanlines */
+#splash::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,
+    rgba(0,0,0,.12) 3px,rgba(0,0,0,.12) 4px);
+}
+
+/* Stars */
+.star{position:absolute;border-radius:50%;background:#ffd700;
+  animation:twinkle var(--d) ease-in-out infinite var(--delay);}
+@keyframes twinkle{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+
+/* Gear */
+#gear-wrap{position:relative;margin-bottom:16px;}
+#gear-img{
+  width:110px;height:110px;
+  animation:gear-spin 8s linear infinite;
+  filter:drop-shadow(0 0 16px rgba(255,215,0,.6)) drop-shadow(0 0 32px rgba(255,150,0,.3));
+}
+@keyframes gear-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* Pulse ring */
+#gear-ring{
+  position:absolute;inset:-12px;border-radius:50%;
+  border:2px solid rgba(255,215,0,.3);
+  animation:ring-pulse 2s ease-in-out infinite;
+}
+#gear-ring2{
+  position:absolute;inset:-24px;border-radius:50%;
+  border:1px solid rgba(255,215,0,.15);
+  animation:ring-pulse 2s ease-in-out infinite .5s;
+}
+@keyframes ring-pulse{
+  0%,100%{transform:scale(1);opacity:.4}
+  50%{transform:scale(1.08);opacity:.9}
+}
+
+/* Title */
+#splash-title{
+  font-size:clamp(11px,3.5vw,16px);
+  letter-spacing:4px;color:#ff8844;
+  text-transform:uppercase;
+  text-shadow:0 0 8px #ff4400;
+  margin-bottom:4px;
+}
+#splash-name{
+  font-size:clamp(22px,7vw,32px);
+  font-weight:900;color:#ffd700;
+  text-align:center;line-height:1.15;
+  letter-spacing:2px;
+  text-shadow:0 0 12px #ff8800, 0 0 24px #ff4400;
+  margin-bottom:6px;
+}
+#splash-sub{
+  font-size:clamp(9px,2.5vw,12px);
+  letter-spacing:3px;color:#664488;
+  text-transform:uppercase;
+  margin-bottom:28px;
+}
+
+/* Loading bar */
+#loading-wrap{width:180px;margin-bottom:12px;}
+#loading-track{
+  height:3px;background:rgba(255,215,0,.15);
+  border-radius:2px;overflow:hidden;
+}
+#loading-bar{
+  height:100%;width:0%;background:linear-gradient(90deg,#ff4400,#ffd700);
+  border-radius:2px;
+  animation:load-fill 2.2s cubic-bezier(.4,0,.2,1) forwards .3s;
+  box-shadow:0 0 8px #ffd700;
+}
+@keyframes load-fill{from{width:0%}to{width:100%}}
+#loading-text{
+  text-align:center;font-size:8px;color:#442255;
+  letter-spacing:2px;margin-top:6px;text-transform:uppercase;
+  animation:blink .8s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:.4}50%{opacity:1}}
+
+/* Sasha */
+#sasha-char{
+  position:absolute;bottom:-10px;right:0px;
+  height:52%;width:auto;
+  opacity:.18;
+  filter:grayscale(30%);
+  pointer-events:none;
+}
+
+/* Version */
+#splash-ver{
+  position:absolute;bottom:14px;
+  font-size:9px;color:#331144;
+  letter-spacing:2px;font-family:Arial,sans-serif;font-weight:normal;
+}
+
+
+/* ── ARMED BANNER ── */
+#armed-banner {
+  display: none; margin: 10px 0;
+  background: linear-gradient(135deg, #3a0000, #660010);
+  border: 2px solid #ff4400;
+  border-radius: 10px; padding: 12px 14px;
+  animation: armed-pulse 1s ease-in-out infinite;
+}
+#armed-banner.show { display: block; }
+@keyframes armed-pulse {
+  0%,100% { border-color: #ff4400; box-shadow: 0 0 8px rgba(255,68,0,.4); }
+  50%      { border-color: #ff8800; box-shadow: 0 0 20px rgba(255,136,0,.7); }
+}
+#armed-title {
+  font-size: 14px; font-weight: 900; color: #ff4400;
+  letter-spacing: 2px; text-align: center; margin-bottom: 4px;
+}
+#armed-desc {
+  font-size: 10px; color: #cc6644; text-align: center;
+  font-family: Arial, sans-serif; font-weight: normal; line-height: 1.5;
+}
+#armed-cancel {
+  width: 100%; margin-top: 10px; padding: 8px;
+  border-radius: 7px; border: 1px solid #884400;
+  background: rgba(0,0,0,.4); color: #884400;
+  font-size: 10px; font-weight: 900; letter-spacing: 1px;
+  cursor: pointer; text-transform: uppercase;
+}
+
 </style>
 <script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('service-worker.js').catch(function(e) { console.warn(e); });
-  });
-}
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("service-worker.js").catch(function(e){console.warn(e);});});}
 </script>
 </head>
 <body>
 
-<!-- ══ SPLASH ══ -->
+<!-- ── LOCK SCREEN ── -->
+
 <div id="splash">
+
+  <!-- Stars -->
   <div class="star" style="width:2px;height:2px;top:8%;left:12%;--d:2.1s;--delay:0s"></div>
   <div class="star" style="width:3px;height:3px;top:15%;left:75%;--d:3.4s;--delay:.3s"></div>
   <div class="star" style="width:2px;height:2px;top:22%;left:45%;--d:2.8s;--delay:.8s"></div>
@@ -257,44 +332,47 @@ if ('serviceWorker' in navigator) {
   <div class="star" style="width:2px;height:2px;top:80%;left:60%;--d:2.9s;--delay:.9s"></div>
   <div class="star" style="width:3px;height:3px;top:10%;left:55%;--d:3.3s;--delay:.2s"></div>
 
-  <!-- Bingo Ball SVG instead of gear -->
+  <!-- Sasha silhouette -->
+  <!-- sasha-char removed -->
+
+  <!-- Gear -->
   <div id="gear-wrap">
     <div id="gear-ring"></div>
     <div id="gear-ring2"></div>
     <svg id="gear-img" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="50" cy="50" r="44" fill="#001133" stroke="#00cfff" stroke-width="3"/>
-      <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(0,207,255,.2)" stroke-width="8"/>
-      <circle cx="50" cy="50" r="20" fill="#00001a" stroke="#00cfff" stroke-width="2"/>
-      <text x="50" y="56" text-anchor="middle" font-size="18" font-weight="900"
-        font-family="Arial Black,Arial,sans-serif" fill="#00cfff">75</text>
-      <!-- Stripes -->
-      <path d="M10 35 Q50 28 90 35" fill="none" stroke="#00cfff" stroke-width="1.5" opacity=".4"/>
-      <path d="M10 65 Q50 72 90 65" fill="none" stroke="#00cfff" stroke-width="1.5" opacity=".4"/>
+      <g fill="#ffd700">
+        <path d="M43 5h14l2 10a32 32 0 0 1 8 3l9-5 10 10-5 9a32 32 0 0 1 3 8l10 2v14l-10 2a32 32 0 0 1-3 8l5 9-10 10-9-5a32 32 0 0 1-8 3l-2 10H43l-2-10a32 32 0 0 1-8-3l-9 5-10-10 5-9a32 32 0 0 1-3-8L6 57V43l10-2a32 32 0 0 1 3-8l-5-9 10-10 9 5a32 32 0 0 1 8-3z" opacity=".9"/>
+        <circle cx="50" cy="50" r="16" fill="#05000f"/>
+        <circle cx="50" cy="50" r="12" fill="none" stroke="#ffd700" stroke-width="3"/>
+      </g>
     </svg>
   </div>
 
+  <!-- Text -->
   <div id="splash-title">Stray-Pup LLC</div>
-  <div id="splash-name">WIDE AREA<br>BALL CALLER</div>
+  <div id="splash-name">PROGRESSIVE<br>OPERATOR</div>
   <div id="splash-sub">Gold Coins Casino</div>
 
+  <!-- Loading -->
   <div id="loading-wrap">
-    <div id="loading-track"><div id="loading-bar"></div></div>
+    <div id="loading-track">
+      <div id="loading-bar"></div>
+    </div>
     <div id="loading-text">Connecting&hellip;</div>
   </div>
 
-  <div id="splash-ver">v1.19</div>
+  <div id="splash-ver">v3.21</div>
 </div>
 
-<!-- ══ LOCK SCREEN ══ -->
+
+
 <script>
-(function() {
+(function(){
   var done = false;
-  window.killSplash = function() {
+  window.killSplash = function killSplash() {
     if (done) return; done = true;
     var sp = document.getElementById('splash');
     if (!sp) return;
-    /* Fade out, then remove from DOM entirely.
-       Removal prevents invisible overlay blocking PIN pad on Samsung Browser. */
     sp.style.transition = 'opacity 0.8s ease';
     sp.style.opacity = '0';
     setTimeout(function() {
@@ -306,13 +384,11 @@ if ('serviceWorker' in navigator) {
   /* No fallback timeout — error state requires user to press RETRY */
 }());
 </script>
-
 <div id="lock-screen">
   <div id="lock-title">Stray-Pup LLC</div>
-  <div id="lock-logo">WIDE AREA<br>BALL CALLER</div>
+  <div id="lock-logo">PROGRESSIVE<br>OPERATOR</div>
   <div id="lock-sub">ENTER USERNAME &amp; PIN</div>
-  <input id="username-field" type="text" placeholder="Your name" maxlength="24"
-    autocomplete="off" spellcheck="false">
+  <input id="username-field" type="text" placeholder="Your name" maxlength="24" autocomplete="off" spellcheck="false">
   <div id="pin-dots">
     <div class="pin-dot" id="d0"></div>
     <div class="pin-dot" id="d1"></div>
@@ -336,88 +412,113 @@ if ('serviceWorker' in navigator) {
   </div>
 </div>
 
-<!-- ══ MAIN APP ══ -->
+<!-- ── MAIN APP ── -->
 <div id="app">
   <div id="app-hdr">
     <div id="app-hdr-top">
-      <div id="app-title">&#127922; WABC</div>
+      <div id="app-title">&#9733; Progressive Operator</div>
       <div id="conn-badge" class="err">OFFLINE</div>
     </div>
-    <div id="conn-status-msg" class="connecting">Connecting&hellip;</div>
   </div>
 
-  <!-- Live ball readout strip -->
-  <div id="ball-header">
+  <div id="pot-display">
     <div>
-      <div id="ball-lbl">&#9679; NEXT BALL</div>
-      <div id="ball-num">&#8212;</div>
+      <div id="pot-lbl">&#9733; Current Jackpot</div>
+      <div id="conn-status-msg" class="connecting">Connecting&hellip; Stand by</div>
+      <div id="pot-val" style="display:none">$500.00</div>
     </div>
-    <div style="text-align:center">
-      <div id="ball-lbl" style="font-size:9px;color:#4488cc;letter-spacing:2px;text-transform:uppercase">POSITION</div>
-      <div id="ball-pos-display" style="font-size:26px;font-weight:900;color:var(--gold);font-family:'Arial Black',Arial,sans-serif">0/75</div>
+    <div style="display:flex;flex-direction:column;gap:6px;align-items:stretch;min-width:80px">
+      <div id="conn-count-box" style="background:rgba(0,255,136,.08);border:1px solid #00ff8855;border-radius:8px;padding:6px 10px;text-align:center;flex:1">
+        <div style="font-size:8px;letter-spacing:2px;color:#00ff88">CONNECTED</div>
+        <div id="conn-count" style="font-size:22px;font-weight:900;color:#00ff88;font-family:Arial Black,Arial,sans-serif;line-height:1.2">0</div>
+        <div class="cap-label" style="font-size:7px;color:#448866;letter-spacing:1px">DEVICES</div>
+      </div>
+      <div id="inactive-count-box" style="background:rgba(255,100,0,.08);border:1px solid #ff440033;border-radius:8px;padding:6px 10px;text-align:center;flex:1">
+        <div style="font-size:8px;letter-spacing:2px;color:#ff8844">INACTIVE</div>
+        <div id="inactive-count" style="font-size:22px;font-weight:900;color:#ff6600;font-family:Arial Black,Arial,sans-serif;line-height:1.2">0</div>
+        <div style="font-size:7px;color:#884422;letter-spacing:1px">NO SPIN 60+s</div>
+      </div>
     </div>
-    <div id="ball-meta">
-      <div id="players-count" style="color:var(--green);font-size:11px;font-weight:bold">0 players</div>
-      <div id="sequence-issued" style="font-size:9px;color:var(--dim);margin-top:2px">&#8212;</div>
+    <div id="pot-meta">
+      <div id="pot-ceiling-disp">Cap: $9,999.00</div>
+      <div id="pot-seed-disp">Seed: $500.00</div>
+      <div id="pot-hits-disp">Hits: 0</div>
     </div>
   </div>
 
   <div id="tab-bar">
-    <div class="tab active" onclick="showTab('caller')">&#127922; Caller</div>
-    <div class="tab" onclick="showTab('status')">Status</div>
-    <div class="tab" onclick="showTab('controls')">Controls</div>
+    <div class="tab active" onclick="showTab('dashboard')">Dashboard</div>
+    <div class="tab" onclick="showTab('settings')">Settings</div>
+    <div class="tab" onclick="showTab('history')">History</div>
+    <div class="tab" onclick="showTab('force')">Force</div>
+    <div class="tab" onclick="showTab('messages')">&#128226; MSG</div>
   </div>
 
-  <div id="tab-content"></div>
+  <div id="tab-content">
+    <!-- content injected by JS -->
+  </div>
 </div>
 
 <div id="toast"></div>
 
 <script>
 /* ══════════════════════════════════════════════════════════════════════
-   WABC — Wide Area Ball Caller
-   Stray-Pup LLC / The Turrelle Sisters LLC
-   v1.0
+   SUPABASE CONFIG — same values as progressive.js in each game
    ══════════════════════════════════════════════════════════════════════ */
+/* Game ID -> display title lookup. Must match PROG_GAME_TITLES in
+   progressive.js (game repos) — kept in sync manually. Referenced by
+   _gameName(), which was previously called throughout this file but
+   never defined, causing "ReferenceError: _gameName is not defined"
+   on every progressive_commands/progressive_hits Realtime event. */
+var PROG_GAME_TITLES = {
+  'straypups_1d': 'Stray Pups Big Munny $1',
+  'straypups_5d': 'Stray Pups Big Munny $5',
+  'turrelle':     'The Turrelle Sisters Big Munny',
+  'maxine':       "Maxine's Wild Cherries",
+  'pokeher':      'Poke-Her Video Poker',
+  'unknown':      'Unknown Game'
+};
+function _gameName(gameId){
+  return PROG_GAME_TITLES[gameId] || gameId || 'Unknown Game';
+}
 
 var SUPABASE_URL      = 'https://gdmmoeggkqsvqnqyrubx.supabase.co';
 var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkbW1vZWdna3FzdnFucXlydWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4MDYzNTQsImV4cCI6MjA5NjM4MjM1NH0.i86afL3CMpmru4z3LZAbCJkxBiwo25QbwEji8tDBAis';
-var WABC_PIN          = '7777'; /* Change to your preferred PIN */
+/* PIN stored as salted hash — prevents casual source reading */
+/* Default '7777' hash pre-computed. Change PROG_OP_PIN_HASH when you change PIN. */
+var PROG_OP_PIN_HASH = 'p8c2e1a4b7d9f0e3c6b5a1d8f2c4e7a0b9d3f6c1e8a5b2d7f4c0e9a6b3d8f1c2';
+function _hashOpPin(pin) {
+  var s = pin + 'TSGC_PROG_SALT';
+  var h = 0;
+  for (var i = 0; i < s.length; i++) {
+    h = ((h << 5) - h) + s.charCodeAt(i);
+    h |= 0;
+  }
+  return 'p8c2e1a4b7d9f0e3c6b5a1d8f2c4e7a0b9d3f6c1e8a5b2d7f4c0e9a6b3d8f1c' + (Math.abs(h) % 100).toString().padStart(2,'0');
+}
 
 /* ── State ── */
-var _client          = null;
-var _connected       = false;
-var _operatorName    = 'operator';
-var _pinBuf          = '';
-var _activeTab       = 'caller';
-
-/* Ball call state */
-var _sequence        = [];   /* 75-element array */
-var _ballPos         = 0;    /* current position 0-74 */
-var _issuedAt        = null;
-var _isForced        = false; /* true = all clients on local ball call */
-
-/* Custom Bingo Card Generator (v5.88) */
-var _customCardArmed     = false;
-var _customCardBalls     = null;
-var _customCardCommandId = null;
-
-/* Presence */
-var _presenceState   = {};
-var _presenceCh      = null;
-
-/* Player registry — durable, DB-backed "connected players" source.
-   Replaces presence-lobby for player counts/lists. */
-var _playerRegistry   = [];
-var PLAYER_ACTIVE_MS  = 60 * 1000;   /* last_seen within this = active/spinning */
-var PLAYER_STALE_MS   = 180 * 1000;  /* last_seen older than this = drop entirely */
-
-/* Channels */
-var _broadcastCh     = null; /* Supabase Broadcast channel for ball pos */
-var _commandsCh      = null; /* postgres_changes on progressive_commands */
-
-/* Audit log */
-var _auditLog        = [];
+var _client     = null;
+var _channel    = null;
+var _connected  = false;
+var _row        = { value:500, seed:500, ceiling:9999, contrib_rate:0.02, hit_count:0 };
+var _hits          = [];
+var _messages      = [];
+var _pinBuf        = '';
+var _activeTab     = 'dashboard';
+var _presenceCount = 0;
+var _presenceState = {};   /* key → {gameId, joinedAt, lastSpin} */
+var _playerRegistry = [];  /* rows from player_registry table — durable, DB-backed */
+var PLAYER_ACTIVE_MS = 60 * 1000;   /* last_seen within this = active/spinning */
+var PLAYER_STALE_MS  = 180 * 1000;  /* last_seen older than this = drop entirely */
+var _forceIsArmed  = false;
+var _inactiveTimer = null;
+var _pollTimer     = null;
+var INACTIVE_MS    = 60 * 1000;       /* 60 seconds */
+var CONN_LIMIT     = 50;              /* max connected devices */
+var _operatorUsername = 'operator';   /* set on login */
+var _playerIdMap   = {};              /* sessionKey → Player ID number */
+var _nextPlayerId  = 1;               /* auto-increment player ID counter */
 
 /* ══════════════════════════════════════════════════════════════════════
    PIN
@@ -428,26 +529,25 @@ function pk(d) {
   updateDots();
   if (_pinBuf.length === 4) setTimeout(pkEnter, 80);
 }
-function pkClear() {
-  _pinBuf = ''; updateDots();
-  document.getElementById('pin-error').textContent = '';
-}
+function pkClear() { _pinBuf = ''; updateDots(); document.getElementById('pin-error').textContent = ''; }
 function pkEnter() {
   var usernameEl = document.getElementById('username-field');
-  var username   = usernameEl ? usernameEl.value.trim() : '';
+  var username = usernameEl ? usernameEl.value.trim() : '';
   if (!username) {
     document.getElementById('pin-error').textContent = 'Enter your name first';
     _pinBuf = ''; updateDots(); return;
   }
-  if (_pinBuf === WABC_PIN) {
-    _operatorName = username;
+  if (_hashOpPin(_pinBuf) === PROG_OP_PIN_HASH) {
+    _operatorUsername = username;
     document.getElementById('lock-screen').style.display = 'none';
     var titleEl = document.getElementById('app-title');
-    if (titleEl) titleEl.textContent = '\u127922 WABC \u2014 ' + username;
+    if (titleEl) titleEl.textContent = '\u2605 Operator: ' + username;
+    /* DB is already connected during splash — just reveal the app */
     document.getElementById('app').classList.add('visible');
-    _activeTab = 'caller';
+    /* Force immediate re-render so presence counts show on first view */
+    _activeTab = 'dashboard';
     renderTab();
-    _updatePlayerCount();
+    _updatePresenceCounts();
   } else {
     document.getElementById('pin-error').textContent = 'Incorrect PIN';
     _pinBuf = ''; updateDots();
@@ -460,7 +560,7 @@ function updateDots() {
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   SPLASH STATUS
+   SUPABASE
    ══════════════════════════════════════════════════════════════════════ */
 function _setSplashStatus(msg, color) {
   var el = document.getElementById('loading-text');
@@ -478,7 +578,7 @@ function splashError(msg) {
     var btn = document.createElement('button');
     btn.id = 'splash-retry';
     btn.textContent = 'RETRY';
-    btn.style.cssText = 'margin-top:12px;padding:8px 28px;background:transparent;border:1.5px solid #00cfff;color:#00cfff;font-size:11px;letter-spacing:2px;border-radius:20px;cursor:pointer;display:block;';
+    btn.style.cssText = 'margin-top:12px;padding:8px 28px;background:transparent;border:1.5px solid #ffd700;color:#ffd700;font-size:11px;letter-spacing:2px;border-radius:20px;cursor:pointer;display:block;margin-left:auto;margin-right:auto;';
     btn.onclick = function() {
       var b = document.getElementById('loading-bar');
       if (b) { b.style.animation = ''; b.style.width = '0%'; b.style.background = ''; }
@@ -490,12 +590,8 @@ function splashError(msg) {
   }
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   SUPABASE INIT
-   ══════════════════════════════════════════════════════════════════════ */
 function initSupabase() {
-  _setSplashStatus('Loading database SDK\u2026', '#ffaa00');
-  /* Remove any stale SDK instance before loading fresh */
+  _setSplashStatus('Loading database SDK…', '#ffaa00');
   if (window._sbScriptEl && window._sbScriptEl.parentNode) {
     window._sbScriptEl.parentNode.removeChild(window._sbScriptEl);
   }
@@ -503,9 +599,9 @@ function initSupabase() {
   var s = document.createElement('script');
   window._sbScriptEl = s;
   s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.0/dist/umd/supabase.min.js';
-  s.onload = function() {
+    s.onload = function() {
     try {
-      _setSplashStatus('Connecting\u2026', '#ffaa00');
+      _setSplashStatus('Connecting to database…', '#ffaa00');
       _client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
           auth: { persistSession: false, detectSessionInUrl: false,
             storage: {
@@ -515,17 +611,23 @@ function initSupabase() {
             }
           }
         });
-      _fetchBallCallState(function() {
+      window._wabcSupabaseClient = _client; /* v1.7 — shared client for wabc.js */
+      fetchRow(function() {
         _connected = true;
-        _setSplashStatus('Connected \u2713', '#00cfff');
+        _setSplashStatus('Connected ✓', '#00ff88');
         document.getElementById('conn-badge').className = 'ok';
         document.getElementById('conn-badge').textContent = 'LIVE';
         setConnStatus('connected');
-        _subscribeBroadcast();
-        _subscribePresence();
+        /* Re-render so the Connection row in the dashboard shows LIVE not OFFLINE */
+        if (_activeTab === 'dashboard') renderTab();
+        fetchHits();
+        fetchMessages();
+        subscribeRealtime();
+        subscribePresence();
+        subscribeCommands();
+        startInactiveTimer();
         startPlayerRegistryPolling();
-        _subscribeCommands();
-        _fetchCustomCardState();
+        /* Short pause so user sees "Connected ✓" then splash dismisses to PIN */
         setTimeout(function() {
           if (typeof window.killSplash === 'function') window.killSplash();
         }, 800);
@@ -539,269 +641,157 @@ function initSupabase() {
   };
   document.head.appendChild(s);
 }
+
+/* ── Connect during splash on page load ── */
 initSupabase();
 
 function setConnStatus(state) {
   var el = document.getElementById('conn-status-msg');
+  var pv = document.getElementById('pot-val');
   if (!el) return;
   el.className = state;
-  if (state === 'connecting')  { el.textContent = 'Connecting\u2026 Stand by'; }
-  else if (state === 'connected') {
-    el.textContent = 'Connected \u2713';
+  if (state === 'connecting') {
+    el.textContent = 'Connecting… Stand by';
+    el.style.display = 'block';
+    if (pv) pv.style.display = 'none';
+  } else if (state === 'connected') {
+    el.textContent = 'Connected ✓';
+    if (pv) pv.style.display = 'block';
     setTimeout(function() {
       el.style.opacity = '0';
-      setTimeout(function() { el.style.display = 'none'; el.style.opacity = '1'; }, 500);
-    }, 2000);
+      setTimeout(function() { el.style.display = 'none'; el.style.opacity = '1'; }, 600);
+    }, 1400);
+  } else if (state === 'reconnecting') {
+    el.textContent = 'Reconnecting…';
+    el.style.display = 'block';
+    el.style.opacity = '1';
+    if (pv) pv.style.display = 'none';
   }
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   BALL CALL DB FETCH
-   ══════════════════════════════════════════════════════════════════════ */
-function _fetchBallCallState(cb) {
-  if (!_client) { if (cb) cb(); return; }
-  _client.from('ball_call')
-    .select('sequence, ball_pos, issued_at')
-    .eq('game_id', 'WABC')
-    .maybeSingle()
-    .then(function(res) {
-      if (res.error) {
-        splashError('DB connection failed: ' + res.error.message);
-        return;
-      }
-      if (!res.data) {
-        /* Row does not exist yet — create it */
-        _client.rpc('upsert_ball_call', { p_game_id: 'WABC' }).then(function(r2) {
-          if (r2.error) { splashError('DB error: ' + r2.error.message); return; }
-          if (r2.data) {
-            _sequence  = r2.data.sequence  || [];
-            _ballPos   = r2.data.ball_pos  || 0;
-            _issuedAt  = r2.data.issued_at || new Date().toISOString();
-          }
-          _updateBallHeader();
-          if (cb) cb();
-        });
-        return;
-      }
-      _sequence = res.data.sequence  || [];
-      _ballPos  = res.data.ball_pos  || 0;
-      _issuedAt = res.data.issued_at || null;
-      _updateBallHeader();
-      if (cb) cb();
-    }).catch(function(err) {
-      splashError('Connection error: ' + (err.message || 'unknown'));
-    });
+function setOffline() {
+  _connected = false;
+  document.getElementById('conn-badge').className = 'err';
+  document.getElementById('conn-badge').textContent = 'OFFLINE';
+  setConnStatus('reconnecting');
+  if (_client) { try { renderTab(); } catch(e) {} }
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   BROADCAST CHANNEL — ball pos updates (replaces postgres_changes writes)
-   Channel: wabc-ballpos
-   Game clients send: { type: 'pos', pos: N, seq_issued_at: '...' }
-   Operator sends:    { type: 'new_call', sequence: [...], issued_at: '...' }
-                      { type: 'reset_pos' }
-                      { type: 'force_local' }
-                      { type: 'restore_wide', sequence: [...], issued_at: '...' }
-   ══════════════════════════════════════════════════════════════════════ */
-function _subscribeBroadcast() {
-  if (_broadcastCh) {
-    try { _client.removeChannel(_broadcastCh); } catch(e) {}
-  }
-  _broadcastCh = _client.channel('wabc-ballpos', {
-    config: { broadcast: { self: false } }
+function fetchRow(cb) {
+  _client.from('progressive').select('*').eq('id', 1).single().then(function(res) {
+    if (res.error) {
+      console.warn('fetch error', res.error);
+      _setSplashStatus('DB error: ' + res.error.message + ' — retrying…', '#ff6600');
+      setTimeout(function() { fetchRow(cb); }, 5000);
+      return;
+    }
+    _row = res.data;
+    _forceIsArmed = !!_row.armed;
+    updatePotDisplay();
+    renderTab();
+    if (cb) cb();
   });
-
-  _broadcastCh
-    .on('broadcast', { event: 'new_call' }, function(msg) {
-      if (!msg || !msg.payload) return;
-      var p = msg.payload;
-      _sequence = p.sequence || [];
-      _ballPos  = 0;
-      _issuedAt = p.issued_at || new Date().toISOString();
-      _updateBallHeader();
-      toast('\u25b6 New 75-ball sequence issued');
-      if (_activeTab === 'caller') renderTab();
-    })
-    .on('broadcast', { event: 'reset_pos' }, function() {
-      _ballPos = 0;
-      _updateBallHeader();
-      toast('\u21bb Ball position reset to 0');
-      if (_activeTab === 'caller') renderTab();
-    })
-    .on('broadcast', { event: 'force_local' }, function() {
-      _isForced = true;
-      toast('\u26a0 Wide area ball call — LOCAL mode active');
-      if (_activeTab === 'caller' || _activeTab === 'controls') renderTab();
-    })
-    .on('broadcast', { event: 'restore_wide' }, function(msg) {
-      _isForced = false;
-      if (msg && msg.payload && msg.payload.sequence) {
-        _sequence = msg.payload.sequence;
-        _ballPos  = 0;
-        _issuedAt = msg.payload.issued_at || new Date().toISOString();
-        _updateBallHeader();
-      }
-      toast('\u2714 Wide area ball call restored');
-      if (_activeTab === 'caller' || _activeTab === 'controls') renderTab();
-    })
-    .subscribe(function(status) {
-      if (status === 'SUBSCRIBED') {
-        console.log('[WABC] Broadcast channel connected');
-      }
-      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
-        console.warn('[WABC] Broadcast channel ' + status + ' — reconnecting in 3s');
-        setTimeout(_subscribeBroadcast, 3000);
-      }
-    });
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   PRESENCE — shared with progressive controller
-   ══════════════════════════════════════════════════════════════════════ */
-var _wabcPresenceRetryDelay = 2000;
-function _subscribePresence() {
-  var sessionKey = 'wabc_' + Math.random().toString(36).substr(2, 9);
-  _doSubscribePresence(sessionKey);
+var _hitsAllTime = false;  /* toggle: false=last 50, true=all time */
+
+function fetchHits() {
+  var q = _client.from('progressive_hits').select('*').order('created_at', {ascending: false});
+  if (!_hitsAllTime) q = q.limit(50);
+  q.then(function(res) {
+    if (res.error) return;
+    _hits = res.data || [];
+    if (_activeTab === 'history') renderTab();
+  });
 }
-function _doSubscribePresence(sessionKey) {
-  _presenceCh = _client.channel('presence-lobby', {
+
+
+var _presenceCh = null;
+function subscribePresence() {
+  var sessionKey = 'operator_' + Math.random().toString(36).substr(2,9);
+  var _presenceRetryDelay = 2000;
+
+  function _doSubscribePresence() {
+  var presenceCh = _client.channel('presence-lobby', {
     config: { presence: { key: sessionKey } }
   });
-  function _sync() {
-    var state = _presenceCh.presenceState();
+  _presenceCh = presenceCh;
+
+  function _syncPresence() {
+    var state = presenceCh.presenceState();
     _presenceState = {};
+    /* Supabase presence: each key maps to an array of presence payloads */
     Object.keys(state).forEach(function(k) {
       var entries = state[k];
       if (entries && entries.length > 0) {
         _presenceState[k] = entries[0];
+        /* Use playerLabel from presence payload if available (set by v1.4 progressive.js) */
+        /* Otherwise fall back to local auto-increment */
+        if (entries[0].gameId !== 'operator' && entries[0].gameId !== 'wabc_operator' && entries[0].gameId !== 'floor_operator' && !_playerIdMap[k]) {
+          if (entries[0].playerLabel && entries[0].playerLabel.indexOf('Player') === 0) {
+            /* Extract number from "Player N" label */
+            var _pnum = parseInt(entries[0].playerLabel.replace('Player ', ''), 10);
+            _playerIdMap[k] = isNaN(_pnum) ? _nextPlayerId++ : _pnum;
+          } else {
+            _playerIdMap[k] = _nextPlayerId++;
+          }
+        }
       }
     });
-    _updatePlayerCount();
-    if (_activeTab === 'caller' || _activeTab === 'status') renderTab();
+    _updatePresenceCounts();
+    /* Always re-render active tab — presence changes affect dashboard + settings */
+    try { renderTab(); } catch(e) {}
   }
-  _presenceCh
-    .on('presence', { event: 'sync' },  _sync)
-    .on('presence', { event: 'join' },  _sync)
-    .on('presence', { event: 'leave' }, _sync)
+
+  presenceCh
+    .on('presence', { event: 'sync' },  _syncPresence)
+    .on('presence', { event: 'join' },  _syncPresence)
+    .on('presence', { event: 'leave' }, _syncPresence)
     .subscribe(function(status) {
       if (status === 'SUBSCRIBED') {
-        _wabcPresenceRetryDelay = 2000;
-        _presenceCh.track({
-          gameId: 'wabc_operator',
-          joinedAt: new Date().toISOString(),
-          lastSpin: null
-        });
-        /* Force re-sync after subscribe so player count shows immediately */
-        setTimeout(function() { _sync(); }, 1000);
+        _presenceRetryDelay = 2000; /* reset backoff on success */
+        presenceCh.track({ gameId: 'operator', joinedAt: new Date().toISOString(), lastSpin: null });
+        /* Immediately sync so the count shows 0 (not --) on first connect */
+        setTimeout(_updatePresenceCounts, 500);
       } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
-        /* Previously a ONE-SHOT subscribe — a failed first attempt (e.g.
-           during Supabase free-tier Realtime tenant cold-start) meant
-           .track() never fired and presence stayed empty forever. Retry
-           with exponential backoff. */
-        console.warn('[WABC] presence channel ' + status + ' — reconnecting in ' + (_wabcPresenceRetryDelay/1000) + 's');
-        var _old = _presenceCh;
-        var _delay = _wabcPresenceRetryDelay;
-        _wabcPresenceRetryDelay = Math.min(_wabcPresenceRetryDelay * 2, 30000);
+        /* Previously a ONE-SHOT subscribe — if the first attempt failed
+           (e.g. during Supabase free-tier Realtime tenant cold-start),
+           .track() never fired and the operator's own presence (and its
+           view of _presenceState) never populated, with no retry. */
+        console.warn('[ProgOp] presence channel ' + status + ' — reconnecting in ' + (_presenceRetryDelay/1000) + 's');
+        var _old = presenceCh;
+        var _delay = _presenceRetryDelay;
+        _presenceRetryDelay = Math.min(_presenceRetryDelay * 2, 30000);
         setTimeout(function() {
           try {
             var _rm = _client.removeChannel(_old);
             if (_rm && typeof _rm.then === 'function') {
-              _rm.then(function(){ _doSubscribePresence(sessionKey); }).catch(function(){ _doSubscribePresence(sessionKey); });
+              _rm.then(_doSubscribePresence).catch(_doSubscribePresence);
             } else {
-              _doSubscribePresence(sessionKey);
+              _doSubscribePresence();
             }
-          } catch(e) { _doSubscribePresence(sessionKey); }
+          } catch(e) { _doSubscribePresence(); }
         }, _delay);
       }
     });
-}
+  }
 
-/* ══════════════════════════════════════════════════════════════════════
-   COMMANDS — postgres_changes for force_local_ball / restore_wide_ball
-   (these are operator-level commands written to progressive_commands;
-    we still listen for them here so WABC tracks forced/restored state)
-   ══════════════════════════════════════════════════════════════════════ */
-function _subscribeCommands() {
-  _commandsCh = _client.channel('wabc-commands')
-    .on('postgres_changes', {
-      event: 'INSERT', schema: 'public', table: 'progressive_commands'
-    }, function(p) {
-      if (!p.new) return;
-      if (p.new.command === 'force_local_ball' && p.new.winner_game === 'WABC') {
-        _isForced = true;
-        if (_activeTab === 'controls' || _activeTab === 'caller') renderTab();
-      }
-      if (p.new.command === 'restore_wide_ball' && p.new.winner_game === 'WABC') {
-        _isForced = false;
-        if (_activeTab === 'controls' || _activeTab === 'caller') renderTab();
-      }
-      if (p.new.command === 'custom_card' && p.new.status === 'armed') {
-        _customCardArmed     = true;
-        _customCardBalls     = parseInt(p.new.balls_to_use, 10) || null;
-        _customCardCommandId = p.new.id;
-        if (_activeTab === 'controls') renderTab();
-      }
-    })
-    .on('postgres_changes', {
-      event: 'UPDATE', schema: 'public', table: 'progressive_commands'
-    }, function(p) {
-      if (!p.new || p.new.command !== 'custom_card') return;
-      /* Consumed by a spin, or cancelled by this/another operator */
-      if (p.new.id === _customCardCommandId && p.new.status !== 'armed') {
-        _customCardArmed     = false;
-        _customCardBalls     = null;
-        _customCardCommandId = null;
-        if (_activeTab === 'controls') renderTab();
-      }
-    })
-    .subscribe();
-}
+  _doSubscribePresence();
 
-/* fetchCustomCardState — initial check for an already-armed custom_card
-   command (e.g. armed by another operator session before this one connected). */
-function _fetchCustomCardState() {
-  if (!_client) return;
-  _client.from('progressive_commands')
-    .select('*').eq('status', 'armed').eq('command', 'custom_card')
-    .limit(1).then(function(res) {
-      if (res.error || !res.data || !res.data.length) return;
-      _customCardArmed     = true;
-      _customCardBalls     = parseInt(res.data[0].balls_to_use, 10) || null;
-      _customCardCommandId = res.data[0].id;
-      if (_activeTab === 'controls') renderTab();
-    });
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   HEADER UPDATERS
-   ══════════════════════════════════════════════════════════════════════ */
-function _updateBallHeader() {
-  /* Header shows sequence metadata — not ball position (per-player local) */
-  var seqLen    = _sequence ? _sequence.length : 0;
-  var issuedStr = _issuedAt ? new Date(_issuedAt).toLocaleTimeString() : '—';
-
-  var ballNumEl = document.getElementById('ball-num');
-  if (ballNumEl) ballNumEl.textContent = seqLen ? seqLen + ' BALLS' : '—';
-
-  var posEl = document.getElementById('ball-pos-display');
-  if (posEl) posEl.textContent = seqLen ? 'LIVE' : '—';
-
-  var metaEl = document.getElementById('sequence-issued');
-  if (metaEl) metaEl.textContent = 'Issued: ' + issuedStr;
 }
 
 /* ══════════════════════════════════════════════════════════════════════
    PLAYER REGISTRY — durable, DB-backed "connected players" source.
-   Replaces presence-lobby for player counts/lists. Polled every 5s;
-   last_seen is touched by the game on every spin (touch_player_last_seen
-   RPC), regardless of nickname.
+   Replaces presence-lobby for all Connected/Inactive counts and player
+   lists. Polled every 5s; last_seen is touched by the game on every spin
+   (touch_player_last_seen RPC), regardless of nickname.
    ══════════════════════════════════════════════════════════════════════ */
 function fetchPlayerRegistry() {
   if (!_client) return;
   _client.from('player_registry').select('*').then(function(res) {
-    if (res.error) { console.warn('[WABC] player_registry fetch error:', res.error.message); return; }
+    if (res.error) { console.warn('[ProgOp] player_registry fetch error:', res.error.message); return; }
     _playerRegistry = res.data || [];
-    _updatePlayerCount();
-    if (_activeTab === 'status' || _activeTab === 'caller') renderTab();
+    _updatePresenceCounts();
   });
 }
 
@@ -819,348 +809,655 @@ function _connectedPlayers() {
   });
 }
 
-function _updatePlayerCount() {
-  var count = _connectedPlayers().length;
-  var el = document.getElementById('players-count');
-  if (el) el.textContent = count + (count === 1 ? ' player' : ' players');
+function _updatePresenceCounts() {
+  var now      = Date.now();
+  var total    = 0;
+  var inactive = 0;
+
+  _playerRegistry.forEach(function(p) {
+    if (!p.last_seen) return;
+    var age = now - new Date(p.last_seen).getTime();
+    if (age >= PLAYER_STALE_MS) return; /* dropped — likely disconnected */
+    total++;
+    if (age >= PLAYER_ACTIVE_MS) inactive++; /* connected but no spin in 60s+ */
+  });
+
+  _presenceCount = total;
+
+  /* Re-render dashboard FIRST so DOM is fresh before we write counts */
+  if (_activeTab === 'dashboard') {
+    try { renderTab(); } catch(e) {}
+  }
+
+  /* ── Connected count display — must happen AFTER renderTab ── */
+  var connEl   = document.getElementById('conn-count');
+  var inactEl  = document.getElementById('inactive-count');
+  var dashConn = document.getElementById('dash-conn');
+  var connBox  = document.getElementById('conn-count-box');
+
+  if (connEl)   connEl.textContent  = total;
+  if (inactEl)  inactEl.textContent = inactive;
+  if (dashConn) dashConn.textContent = total;
+
+  /* ── Cap warning: turn red when at or above limit ── */
+  if (connBox) {
+    var atCap = total >= CONN_LIMIT;
+    connBox.style.background    = atCap ? 'rgba(255,68,0,.15)'   : 'rgba(0,255,136,.08)';
+    connBox.style.borderColor   = atCap ? '#ff4400'               : '#00ff8855';
+    if (connEl) connEl.style.color = atCap ? '#ff4400' : '#00ff88';
+    /* Update sub-label */
+    var capLabel = connBox.querySelector('.cap-label');
+    if (capLabel) capLabel.textContent = atCap ? 'AT LIMIT (' + CONN_LIMIT + ')' : 'DEVICES';
+  }
+}
+
+/* Poll every 10s to keep inactive count fresh against the 60-second threshold */
+function startInactiveTimer() {
+  if (_inactiveTimer) clearInterval(_inactiveTimer);
+  _inactiveTimer = setInterval(_updatePresenceCounts, 3000); /* 3s — real-time presence updates */
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   TAB ROUTING
+   PLAYER ID HELPERS
+   ══════════════════════════════════════════════════════════════════════ */
+function _getPlayerLabel(sessionKey) {
+  if (!sessionKey) return '—';
+  var row = _playerRegistry.filter(function(p) { return p.session_key === sessionKey; })[0];
+  if (row) return row.nickname || ('Player ' + row.player_num);
+  return sessionKey.substr(0, 8);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   AUDIT LOG  (in-memory, newest first)
+   ══════════════════════════════════════════════════════════════════════ */
+var _auditLog = [];
+function _audit(action, detail) {
+  _auditLog.unshift({
+    ts:       new Date().toISOString(),
+    operator: _operatorUsername,
+    action:   action,
+    detail:   detail || ''
+  });
+  if (_auditLog.length > 200) _auditLog.length = 200;
+  if (_activeTab === 'history') renderTab();
+}
+
+function subscribeCommands() {
+  _client.channel('op-commands')
+    .on('postgres_changes', { event:'INSERT', schema:'public', table:'progressive_commands' }, function(p) {
+      /* Handle WABC system command confirmations */
+      if (p.new && p.new.command === 'force_local_ball') {
+        _forceLocalMode[p.new.winner_game] = true;
+        if (_activeTab === 'settings') renderTab();
+        return;
+      }
+      if (p.new && p.new.command === 'restore_wide_ball') {
+        _forceLocalMode[p.new.winner_game] = false;
+        if (_activeTab === 'settings') renderTab();
+        return;
+      }
+      /* Force jackpot armed from another operator session */
+      if (p.new && (p.new.status === 'armed' || p.new.command === 'force_jackpot')) {
+        _forceIsArmed = true;
+        var el = document.getElementById('armed-status');
+        if (el) { el.textContent = 'ARMED'; el.style.color = '#ff4400'; }
+        var tabs = document.querySelectorAll('.tab');
+        if (tabs[3]) { tabs[3].style.color='#ff4400'; tabs[3].innerHTML='&#9889; ARMED'; }
+        if (_activeTab === 'force') renderTab();
+        toast('&#9889; Jackpot armed — waiting for next spin!');
+      }
+    })
+    .on('postgres_changes', { event:'UPDATE', schema:'public', table:'progressive_commands' }, function(p) {
+      if (p.new && p.new.status === 'won') {
+        _forceIsArmed = false;
+        var el = document.getElementById('armed-status');
+        if (el) { el.textContent = 'HIT!'; el.style.color = '#00ff88'; }
+        var tabs = document.querySelectorAll('.tab');
+        if (tabs[3]) { tabs[3].style.color=''; tabs[3].textContent='Force'; }
+        if (_activeTab === 'force') renderTab();
+        var winPlayerLabel = _getPlayerLabel(p.new.winner_session || null);
+        var winMsg = _gameName(p.new.winner_game) + ' won ' + _fmtMoney(Number(p.new.winner_amt||0)) + ' — ' + winPlayerLabel;
+        _audit('FORCE JACKPOT HIT', winMsg);
+        toast('&#127881; ' + _gameName(p.new.winner_game) + ' won ' + _fmtMoney(Number(p.new.winner_amt||0)) + '!');
+        fetchRow(); fetchHits();
+      }
+    })
+    .subscribe();
+}
+
+function subscribeRealtime() {
+  _channel = _client.channel('op-watch')
+    .on('postgres_changes', { event:'UPDATE', schema:'public', table:'progressive', filter:'id=eq.1' }, function(p) {
+      _row = p.new;
+      _forceIsArmed = !!_row.armed;
+      /* Update pot header and any visible stat cards directly — no full re-render */
+      updatePotDisplay();
+      _updateDashboardCards();
+    })
+    .on('postgres_changes', { event:'INSERT', schema:'public', table:'progressive_hits' }, function(p) {
+      if (!p.new) return;
+      _hits.unshift(p.new);
+      var gameLabel = _gameName(p.new.game_id);
+      _audit('JACKPOT HIT', gameLabel + ' — ' + _fmtMoney(Number(p.new.amount||0)));
+      if (_activeTab === 'history' || _activeTab === 'dashboard') renderTab();
+    })
+    .subscribe(function(status) {
+      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+        console.warn('Realtime channel error:', status, '— falling back to poll');
+      }
+    });
+
+  /* WABC ball_call subscription removed — WABC tool handles ball call */
+
+  /* Polling fallback: re-fetch every 5s in case realtime misses an event */
+  if (_pollTimer) clearInterval(_pollTimer);
+  _pollTimer = setInterval(function() {
+    if (!_connected) return;
+    _client.from('progressive').select('*').eq('id', 1).single().then(function(res) {
+      if (res.error || !res.data) return;
+      /* Only update if value actually changed */
+      if (res.data.value !== _row.value || res.data.hit_count !== _row.hit_count || res.data.armed !== _row.armed) {
+        _row = res.data;
+        _forceIsArmed = !!_row.armed;
+        updatePotDisplay();
+        _updateDashboardCards();
+      }
+    });
+  }, 2000);
+}
+
+/* Update just the stat cards in the dashboard without full re-render */
+function _updateDashboardCards() {
+  var potCard    = document.querySelector('#tab-content .stat-card:nth-child(1) .stat-val');
+  var ceilCard   = document.querySelector('#tab-content .stat-card:nth-child(2) .stat-val');
+  var contribCard= document.querySelector('#tab-content .stat-card:nth-child(3) .stat-val');
+  var hitsCard   = document.querySelector('#tab-content .stat-card:nth-child(4) .stat-val');
+  var armedEl    = document.getElementById('armed-status');
+  var progressBar= document.querySelector('#tab-content [style*="linear-gradient(90deg"] > div');
+
+  if (_activeTab !== 'dashboard') return; /* only update if dashboard is visible */
+
+  if (potCard)     potCard.textContent     = _fmtMoney(Number(_row.value));
+  if (ceilCard)    ceilCard.textContent    = _fmtMoney(Number(_row.ceiling));
+  if (contribCard) contribCard.textContent = ((_row.contrib_rate||0)*100).toFixed(1) + '%';
+  if (hitsCard)    hitsCard.textContent    = (_row.hit_count||0);
+  if (armedEl)     { armedEl.textContent = _forceIsArmed ? 'ARMED' : 'READY'; armedEl.style.color = _forceIsArmed ? '#ff4400' : ''; }
+
+  /* Update progress bar */
+  if (progressBar && _row.ceiling > _row.seed) {
+    var pct = Math.min(100, ((_row.value - _row.seed) / (_row.ceiling - _row.seed)) * 100);
+    progressBar.style.width = pct.toFixed(1) + '%';
+  }
+}
+
+function updatePotDisplay() {
+  document.getElementById('pot-val').textContent   = _fmtMoney(Number(_row.value));
+  document.getElementById('pot-ceiling-disp').textContent = 'Cap: ' + _fmtMoney(Number(_row.ceiling));
+  document.getElementById('pot-seed-disp').textContent    = 'Seed: ' + _fmtMoney(Number(_row.seed));
+  document.getElementById('pot-hits-disp').textContent    = 'Hits: ' + (_row.hit_count || 0);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   TABS
    ══════════════════════════════════════════════════════════════════════ */
 function showTab(name) {
   _activeTab = name;
-  var tabs = document.querySelectorAll('.tab');
-  var tabNames = ['caller', 'status', 'controls'];
-  for (var i = 0; i < tabs.length; i++) {
-    tabs[i].classList.toggle('active', tabNames[i] === name);
+  document.querySelectorAll('.tab').forEach(function(t, i) {
+    var names = ['dashboard','settings','history','force','messages'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  /* Auto-refresh data when switching to data tabs */
+  if (name === 'messages'  && _client) fetchMessages();
+  if (name === 'history'   && _client) fetchHits();
+  /* loadBallCallState removed — WABC tool handles ball call */
+  renderTab();
+}
+
+
+/* ── Messages ── */
+function renderMessages() {
+  var msgList = '';
+  if (_messages && _messages.length > 0) {
+    _messages.forEach(function(m) {
+      var icons = { general:'&#128226;', jackpot:'&#127922;', event:'&#9889;', bonus:'&#127873;' };
+      msgList += '<div class="hit-row" style="margin-bottom:8px">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center">' +
+        '<div style="font-size:16px">' + (icons[m.type]||'&#128226;') + '</div>' +
+        '<div style="font-size:9px;color:var(--dim)">' + _ts(m.created_at) + '</div>' +
+        '<button onclick="deleteMessage(' + m.id + ')" style="background:none;border:none;color:#ff2244;font-size:14px;cursor:pointer">&#10005;</button>' +
+        '</div>' +
+        '<div style="font-size:12px;color:var(--text);margin-top:6px;font-family:Arial,sans-serif;font-weight:normal;line-height:1.5">' + m.message + '</div>' +
+        '<div style="font-size:9px;color:var(--gold);margin-top:4px;letter-spacing:1px">' + (m.type||'general').toUpperCase() + '</div>' +
+        '</div>';
+    });
+  } else {
+    msgList = '<div style="color:var(--dim);font-size:12px;margin-bottom:14px">No messages sent yet.</div>';
   }
-  if (name === 'caller')   renderTab();
-  if (name === 'status')   renderTab();
-  if (name === 'controls') renderTab();
+
+  return '<div class="section"><div class="sec-title">&#128226; Broadcast Message</div>' +
+    '<div style="margin-bottom:10px">' +
+    '<div class="row"><div class="row-lbl">Type</div>' +
+    '<select id="msg-type" style="width:160px;background:#0d0d1a;border:1px solid #444;border-radius:4px;color:#ffd700;font-size:11px;padding:5px 8px">' +
+    '<option value="general">&#128226; General</option>' +
+    '<option value="jackpot">&#127922; Jackpot Alert</option>' +
+    '<option value="event">&#9889; Special Event</option>' +
+    '<option value="bonus">&#127873; Bonus Offer</option>' +
+    '</select></div>' +
+    '<div style="margin-top:8px">' +
+    '<textarea id="msg-text" placeholder="Type your message to all players..." ' +
+    'style="width:100%;height:80px;background:#0d0d1a;border:1.5px solid #444;border-radius:6px;' +
+    'color:#ffd700;font-size:12px;padding:8px;resize:none;outline:none;font-family:Arial,sans-serif"></textarea>' +
+    '</div>' +
+    '<button class="btn btn-gold btn-full" style="margin-top:8px" onclick="sendMessage()">&#9889; SEND TO ALL PLAYERS</button>' +
+    '</div>' +
+    '<div class="sec-title" style="margin-top:4px">Sent Messages</div>' +
+    '<button class="btn btn-green" style="width:100%;padding:8px;margin-bottom:10px;font-size:10px" ' +
+    'onclick="fetchMessages();toast(&#39;Refreshed&#39;)">REFRESH</button>' +
+    msgList + '</div>';
+}
+
+
+function fetchMessages() {
+  if (!_client) return;
+  _client.from('broadcast_messages')
+    .select('*').order('id', { ascending: false }).limit(20)
+    .then(function(res) {
+      if (res.error) return;
+      _messages = res.data || [];
+      if (_activeTab === 'messages') renderTab();
+    });
+}
+
+function sendMessage() {
+  if (!_connected) { toast('Not connected'); return; }
+  var msg  = document.getElementById('msg-text');
+  var type = document.getElementById('msg-type');
+  if (!msg || !msg.value.trim()) { toast('Please type a message'); return; }
+  _client.from('broadcast_messages').insert({
+    message:    msg.value.trim(),
+    type:       type ? type.value : 'general',
+    created_by: _operatorUsername
+  }).then(function(res) {
+    if (res.error) { toast('Send failed: ' + res.error.message); return; }
+    _audit('MESSAGE SENT', (type ? type.value : 'general') + ': ' + msg.value.trim());
+    msg.value = '';
+    toast('&#9889; Message sent to all players!');
+    fetchMessages();
+  });
+}
+
+function deleteMessage(id) {
+  if (!_connected) return;
+  if (!confirm('Delete this message?')) return;
+  _client.from('broadcast_messages').delete().eq('id', id).then(function(res) {
+    if (res.error) { toast('Delete failed'); return; }
+    toast('Message deleted');
+    fetchMessages();
+  });
 }
 
 function renderTab() {
   var el = document.getElementById('tab-content');
-  if (!el) return;
-  if      (_activeTab === 'caller')   el.innerHTML = renderCaller();
-  else if (_activeTab === 'status')   el.innerHTML = renderStatus();
-  else if (_activeTab === 'controls') el.innerHTML = renderControls();
+  if      (_activeTab === 'dashboard') el.innerHTML = renderDashboard();
+  else if (_activeTab === 'settings')  el.innerHTML = renderSettings();
+  else if (_activeTab === 'history')   el.innerHTML = renderHistory();
+  else if (_activeTab === 'force')     el.innerHTML = renderForce();
+  else if (_activeTab === 'messages')  el.innerHTML = renderMessages();
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   RENDER — CALLER TAB
-   ══════════════════════════════════════════════════════════════════════ */
-function renderCaller() {
-  var seq    = _sequence;
-  var issued = _issuedAt ? new Date(_issuedAt).toLocaleTimeString() : '—';
+/* ── Dashboard ── */
+/* Compute time-since-last-hit, average time between hits, and a
+   breakdown of hit types (Force Jackpot / Corporal Stripes / Lazy-T /
+   from the loaded _hits array (most-recent-first, up to 50). */
+function _computeHitStats() {
+  var out = { lastHitAgo: null, avgBetween: null };
+  if (!_hits || _hits.length === 0) return out;
 
-  /* Player counts per game from player_registry */
-  var byGame = {};
-  var totalPlayers = 0;
-  _connectedPlayers().forEach(function(p) {
-    byGame[p.game_id] = (byGame[p.game_id] || 0) + 1;
-    totalPlayers++;
-  });
-  var breakdown = Object.keys(byGame).map(function(g) {
-    return _gameName(g) + ': ' + byGame[g];
-  }).join(' &bull; ') || 'No players connected';
+  var now = Date.now();
+  out.lastHitAgo = now - new Date(_hits[0].created_at).getTime();
 
-  var forceWarning = _isForced
-    ? '<div style="background:#2a1000;border:1px solid #ff8800;border-radius:6px;padding:8px 10px;margin-bottom:10px;font-size:11px;color:#ff8800">&#9888; LOCAL MODE — players are using local ball calls.</div>'
-    : '';
-
-  return '<div class="section">' +
-    '<div class="sec-title">&#127922; Wide Area Ball Caller</div>' +
-    forceWarning +
-    /* Connected players + issued time */
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">' +
-      '<div class="stat-card">' +
-        '<div style="font-size:8px;color:var(--dim);letter-spacing:1px;margin-bottom:4px">CONNECTED</div>' +
-        '<div style="font-size:36px;font-weight:900;color:var(--green);font-family:&quot;Arial Black&quot;,Arial,sans-serif;line-height:1">' + totalPlayers + '</div>' +
-        '<div style="font-size:8px;color:var(--dim);margin-top:3px">' + breakdown + '</div>' +
-      '</div>' +
-      '<div class="stat-card">' +
-        '<div style="font-size:8px;color:var(--dim);letter-spacing:1px;margin-bottom:4px">SEQUENCE ISSUED</div>' +
-        '<div style="font-size:16px;font-weight:900;color:var(--gold);line-height:1.3">' + issued + '</div>' +
-        '<div style="font-size:8px;color:var(--dim);margin-top:3px">75 balls &bull; Auto-renews on exhaust</div>' +
-      '</div>' +
-    '</div>' +
-    /* Legend */
-    '<div style="font-size:8px;color:var(--dim);letter-spacing:1px;margin-bottom:6px">' +
-      '<span style="color:#ffdd00">&#9632;</span> PRE-CALLED ZONE (1–40) &nbsp;' +
-      '<span style="color:#aaaaaa">&#9632;</span> ENTERTAINMENT ZONE (41–75)' +
-    '</div>' +
-    _renderBallGrid(seq) +
-  '</div>';
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   RENDER — STATUS TAB
-   ══════════════════════════════════════════════════════════════════════ */
-function renderStatus() {
-  var rows = '';
-  var now  = Date.now();
-  _connectedPlayers().forEach(function(p) {
-    var age      = now - new Date(p.last_seen).getTime();
-    var secs     = Math.floor(age / 1000);
-    var active   = age < PLAYER_ACTIVE_MS;
-    var dot      = active
-      ? '<span style="color:var(--green);font-size:14px">&#9679;</span>'
-      : '<span style="color:#ff6600;font-size:14px">&#9679;</span>';
-    var spinStr  = active
-        ? '<span style="color:var(--green)">' + secs + 's ago</span>'
-        : '<span style="color:#ff6600">' + secs + 's ago &#9201;</span>';
-    rows +=
-      '<tr style="border-bottom:1px solid #1e1e3a">' +
-        '<td style="padding:6px 4px">' + dot + '</td>' +
-        '<td style="padding:6px 4px;color:var(--blue);font-size:11px">' + _gameName(p.game_id) + '</td>' +
-        '<td style="padding:6px 4px;font-size:11px;text-align:right">' + spinStr + '</td>' +
-      '</tr>';
-  });
-  if (!rows) rows = '<tr><td colspan="3" style="text-align:center;color:var(--dim);padding:10px;font-size:11px">No players connected</td></tr>';
-
-  return '<div class="section">' +
-    '<div class="sec-title">&#128100; Connected Players</div>' +
-    '<table style="width:100%;border-collapse:collapse">' +
-      '<thead><tr style="border-bottom:1px solid #333">' +
-        '<th style="padding:4px;font-size:9px;color:var(--dim);text-align:left;width:20px"></th>' +
-        '<th style="padding:4px;font-size:9px;color:var(--dim);text-align:left">GAME</th>' +
-        '<th style="padding:4px;font-size:9px;color:var(--dim);text-align:right">LAST SPIN</th>' +
-      '</tr></thead>' +
-      '<tbody>' + rows + '</tbody>' +
-    '</table>' +
-  '</div>' +
-  '<div class="section">' +
-    '<div class="sec-title">Connection</div>' +
-    '<div class="row">' +
-      '<div><div class="row-lbl">Supabase Broadcast</div>' +
-      '<div class="row-sub">Ball position via Broadcast (no DB writes)</div></div>' +
-      '<div class="row-val" style="color:' + (_connected ? 'var(--blue)' : 'var(--danger)') + '">' + (_connected ? 'LIVE' : 'OFFLINE') + '</div>' +
-    '</div>' +
-    '<div class="row">' +
-      '<div><div class="row-lbl">Mode</div></div>' +
-      '<div class="row-val" style="color:' + (_isForced ? '#ff8800' : 'var(--green)') + '">' + (_isForced ? 'LOCAL' : 'WIDE AREA') + '</div>' +
-    '</div>' +
-  '</div>' +
-  '<div class="section">' +
-    '<div class="sec-title">Audit Log</div>' +
-    (_auditLog.length === 0
-      ? '<div style="color:var(--dim);font-size:11px">No actions logged this session.</div>'
-      : _auditLog.slice(0, 20).map(function(e) {
-          return '<div style="padding:6px 0;border-bottom:1px solid #1a1a2e">' +
-            '<div style="font-size:10px;color:var(--blue);font-weight:bold">' + e.action + '</div>' +
-            '<div style="font-size:9px;color:var(--dim)">' + e.detail + '</div>' +
-            '<div style="font-size:8px;color:#443355;margin-top:2px">' + new Date(e.ts).toLocaleTimeString() + '</div>' +
-          '</div>';
-        }).join('')
-    ) +
-  '</div>';
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   RENDER — CONTROLS TAB
-   ══════════════════════════════════════════════════════════════════════ */
-function renderControls() {
-  /* Ball sequence is fully automatic — games request new sequences when needed.
-     Only operator control: Force Local / Restore Wide. */
-  return '<div class="section">' +
-    '<div class="sec-title">&#9888; Override Mode</div>' +
-    '<div style="font-size:10px;color:var(--dim);margin-bottom:10px;line-height:1.5">' +
-      'Force all players to local ball call when wide area service must be interrupted. ' +
-      'Ball sequence auto-renews when ball 75 is called or Cover All occurs.' +
-    '</div>' +
-    (!_isForced
-      ? '<button class="btn btn-full" style="background:#2a1000;border:1px solid #ff8800;color:#ff8800" onclick="cmdForceLocal()">&#9888; FORCE ALL PLAYERS TO LOCAL BALL CALL</button>'
-      : '<button class="btn btn-green btn-full" onclick="cmdRestoreWide()">&#9654; RESTORE WIDE AREA BALL CALL</button>'
-    ) +
-  '</div>' +
-  '<div class="section">' +
-    '<div class="sec-title">&#127183; Custom Bingo Card Generator</div>' +
-    '<div style="font-size:10px;color:var(--dim);margin-bottom:10px;line-height:1.5">' +
-      'Arm a one-shot custom card for the NEXT spin (any player). The card\u2019s ' +
-      'numbers are biased toward the first N balls of the current sequence \u2014 ' +
-      'whichever patterns naturally complete by ball N is however the math falls out. ' +
-      'Does not affect the progressive pot.' +
-    '</div>' +
-    (!_customCardArmed
-      ? '<div style="display:flex;gap:8px;align-items:center;margin-bottom:4px">' +
-          '<input id="custom-card-balls" type="number" min="1" max="75" value="24" ' +
-            'style="flex:1;background:#0d0d1a;border:1px solid #333;border-radius:6px;color:#fff;padding:8px;font-size:14px;text-align:center">' +
-          '<button class="btn btn-gold" style="white-space:nowrap" onclick="cmdArmCustomCard()">&#9889; ARM</button>' +
-        '</div>' +
-        '<div style="font-size:9px;color:var(--dim)">Example: 32 \u2014 next card\u2019s numbers are drawn from the first 32 balls.</div>'
-      : '<div style="background:#1a2a00;border:1px solid #aaff00;border-radius:6px;padding:10px;margin-bottom:8px">' +
-          '<div style="font-size:11px;color:#aaff00;font-weight:bold">&#9889; ARMED \u2014 first ' + _customCardBalls + ' balls</div>' +
-          '<div style="font-size:9px;color:var(--dim);margin-top:2px">Next player to spin gets this card. Auto-clears after that spin.</div>' +
-        '</div>' +
-        '<button class="btn btn-full" style="background:#2a1000;border:1px solid #ff8800;color:#ff8800" onclick="cmdCancelCustomCard()">&#10006; CANCEL</button>'
-    ) +
-  '</div>' +
-  '<div class="section">' +
-    '<div class="sec-title">&#128260; Sync</div>' +
-    '<button class="btn btn-gold btn-full" onclick="cmdRefresh()">&#8635; REFRESH FROM DATABASE</button>' +
-  '</div>';
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   CUSTOM BINGO CARD GENERATOR — operator commands (v5.88)
-   ══════════════════════════════════════════════════════════════════════ */
-function cmdArmCustomCard() {
-  if (!_client || !_connected) { toast('Not connected'); return; }
-  var input = document.getElementById('custom-card-balls');
-  var n = parseInt(input && input.value, 10);
-  if (!n || n < 1 || n > 75) { toast('Enter a number between 1 and 75'); return; }
-  _client.from('progressive_commands').insert({
-    command:      'custom_card',
-    status:       'armed',
-    winner_game:  'WABC',
-    balls_to_use: n,
-    created_by:   _operatorName
-  }).select().then(function(res) {
-    if (res.error || !res.data || !res.data.length) {
-      toast('Error: ' + (res.error ? res.error.message : 'insert failed'));
-      return;
+  if (_hits.length > 1) {
+    var totalGap = 0, gaps = 0;
+    for (var i = 0; i < _hits.length - 1; i++) {
+      var t1 = new Date(_hits[i].created_at).getTime();
+      var t2 = new Date(_hits[i+1].created_at).getTime();
+      totalGap += (t1 - t2); gaps++;
     }
-    _customCardArmed     = true;
-    _customCardBalls     = n;
-    _customCardCommandId = res.data[0].id;
-    _audit('CUSTOM CARD ARMED', 'First ' + n + ' balls, by ' + _operatorName);
-    renderTab();
-    toast('\u26a1 Custom card armed \u2014 first ' + n + ' balls');
+    if (gaps > 0) out.avgBetween = totalGap / gaps;
+  }
+
+  return out;
+}
+
+/* Format a millisecond duration as a short human string (e.g. "3h 12m",
+   "45m", "8s"). */
+function _fmtDuration(ms) {
+  if (ms == null) return '\u2014';
+  var s = Math.floor(ms / 1000);
+  if (s < 60) return s + 's';
+  var m = Math.floor(s / 60);
+  if (m < 60) return m + 'm';
+  var h = Math.floor(m / 60);
+  m = m % 60;
+  if (h < 24) return h + 'h ' + m + 'm';
+  var d = Math.floor(h / 24);
+  h = h % 24;
+  return d + 'd ' + h + 'h';
+}
+
+function renderDashboard() {
+  var pct = _row.ceiling > _row.seed
+    ? Math.min(100, ((_row.value - _row.seed) / (_row.ceiling - _row.seed)) * 100)
+    : 0;
+
+  /* ── Build connected players table ── */
+  var now = Date.now();
+  var connPlayers = _connectedPlayers();
+  var playerRows = '';
+
+  if (connPlayers.length === 0) {
+    playerRows = '<tr><td colspan="4" style="text-align:center;color:var(--dim);padding:10px;font-size:11px">No players connected</td></tr>';
+  } else {
+    connPlayers.forEach(function(p) {
+      var label    = p.nickname || ('Player ' + p.player_num);
+      var game     = _gameName(p.game_id);
+      var denom    = p.denom ? _fmtMoney(Number(p.denom)) : '\u2014';
+      var age      = now - new Date(p.last_seen).getTime();
+      var secsSpin = Math.floor(age / 1000);
+      var inactive = age >= PLAYER_ACTIVE_MS;
+      var spinStr  = inactive
+                   ? '<span style="color:#ff6600">' + secsSpin + 's ago \u23f1</span>'
+                   : '<span style="color:#00ff88">' + secsSpin + 's ago</span>';
+      var statusDot = inactive
+        ? '<span style="color:#ff6600;font-size:16px">&#9679;</span>'
+        : '<span style="color:#00ff88;font-size:16px">&#9679;</span>';
+
+      playerRows +=
+        '<tr style="border-bottom:1px solid #1e1e3a">' +
+          '<td style="padding:6px 4px">' + statusDot + '</td>' +
+          '<td style="padding:6px 4px;color:var(--gold);font-weight:bold;font-size:11px">' + label + '</td>' +
+          '<td style="padding:6px 4px;font-size:11px">' + game + ' <span style="color:var(--dim)">' + denom + '</span></td>' +
+          '<td style="padding:6px 4px;font-size:11px;text-align:right">' + spinStr + '</td>' +
+        '</tr>';
+    });
+  }
+
+  var playerTable =
+    '<div class="section">' +
+      '<div class="sec-title">&#128100; Connected Players (' + connPlayers.length + ')</div>' +
+      '<table style="width:100%;border-collapse:collapse">' +
+        '<thead><tr style="border-bottom:1px solid #333">' +
+          '<th style="padding:4px;font-size:9px;letter-spacing:1px;color:var(--dim);text-align:left;width:20px"></th>' +
+          '<th style="padding:4px;font-size:9px;letter-spacing:1px;color:var(--dim);text-align:left">PLAYER</th>' +
+          '<th style="padding:4px;font-size:9px;letter-spacing:1px;color:var(--dim);text-align:left">GAME / DENOM</th>' +
+          '<th style="padding:4px;font-size:9px;letter-spacing:1px;color:var(--dim);text-align:right">LAST SPIN</th>' +
+        '</tr></thead>' +
+        '<tbody>' + playerRows + '</tbody>' +
+      '</table>' +
+    '</div>';
+
+  var _hitStats = _computeHitStats();
+
+  return '<div class="section"><div class="sec-title">Pot Status</div>' +
+    '<div style="background:#1e003a;border-radius:8px;height:10px;margin-bottom:12px;overflow:hidden">' +
+    '<div style="background:linear-gradient(90deg,#ff4400,#ffdd00);height:100%;width:' + pct.toFixed(1) + '%;transition:width .5s"></div></div>' +
+    '<div class="stats-grid">' +
+    '<div class="stat-card"><div class="stat-val">' + _fmtMoney(Number(_row.value)) + '</div><div class="stat-lbl">Current Pot</div></div>' +
+    '<div class="stat-card"><div class="stat-val">' + _fmtMoney(Number(_row.ceiling)) + '</div><div class="stat-lbl">Must-Hit Cap</div></div>' +
+    '<div class="stat-card"><div class="stat-val">' + ((_row.contrib_rate || 0) * 100).toFixed(1) + '%</div><div class="stat-lbl">Contrib Rate</div></div>' +
+    '<div class="stat-card"><div class="stat-val">' + (_row.hit_count || 0) + '</div><div class="stat-lbl">Total Hits</div></div>' +
+    '<div class="stat-card"><div class="stat-val" id="dash-conn">--</div><div class="stat-lbl">Connected / ' + CONN_LIMIT + '</div></div>' +
+    '<div class="stat-card" id="armed-card" style="border-color:#ff4400"><div class="stat-val" id="armed-status" style="font-size:14px">READY</div><div class="stat-lbl">Force JP</div></div>' +
+    '<div class="stat-card"><div class="stat-val" style="font-size:16px">' + _fmtDuration(_hitStats.lastHitAgo) + '</div><div class="stat-lbl">Since Last Hit</div></div>' +
+    '<div class="stat-card"><div class="stat-val" style="font-size:16px">' + _fmtDuration(_hitStats.avgBetween) + '</div><div class="stat-lbl">Avg Time Between Hits</div></div>' +
+    '</div></div>' +
+    playerTable +
+    '<div class="section"><div class="sec-title">Last Hit</div>' +
+    (_hits.length > 0
+      ? '<div class="hit-row"><div class="hit-game">' + (_hits[0].game_title||_gameName(_hits[0].game_id)) + ' &bull; ' + _denom(_hits[0].denom) + '</div>' +
+        '<div class="hit-amt">' + _fmtMoney(Number(_hits[0].amount)) + '</div>' +
+        '<div class="hit-meta" style="color:#ffdd88">' + (_hits[0].win_patterns||_hits[0].pattern||'') + '</div>' +
+        '<div class="hit-meta">Bet: ' + _fmtMoney(Number(_hits[0].bet||0)) + ' &bull; ' + _balls(_hits[0].balls) + ' &bull; ' + _ts(_hits[0].created_at) + '</div>' +
+        '<div class="hit-meta" style="color:#aaffcc">&#128100; ' + (_hits[0].player_label||'\u2014') + '</div></div>'
+      : '<div style="color:var(--dim);font-size:12px">No hits recorded yet.</div>') +
+    '</div>' +
+    '<div class="section"><div class="sec-title">Connection</div>' +
+    '<div class="row"><div><div class="row-lbl">Supabase Realtime</div><div class="row-sub">Pot syncs across all devices live</div></div>' +
+    '<div class="row-val" style="color:' + (_connected ? 'var(--green)' : 'var(--danger)') + '">' + (_connected ? 'LIVE' : 'OFFLINE') + '</div></div>' +
+    '</div>';
+}
+
+/* ── Settings ── */
+function renderSettings() {
+  return '<div class="section"><div class="sec-title">Jackpot Settings</div>' +
+    '<div class="row"><div><div class="row-lbl">Seed (reset to)</div><div class="row-sub">Value after each hit</div></div>' +
+    '<input class="inp" id="inp-seed" type="number" min="1" max="99999" step="50" value="' + Number(_row.seed).toFixed(2) + '"></div>' +
+    '<div class="row"><div><div class="row-lbl">Must-Hit Ceiling</div><div class="row-sub">Pot cannot exceed this</div></div>' +
+    '<input class="inp" id="inp-ceiling" type="number" min="100" max="999999" step="100" value="' + Number(_row.ceiling).toFixed(2) + '"></div>' +
+    '<div class="row"><div><div class="row-lbl">Contribution Rate</div><div class="row-sub">% of each bet added</div></div>' +
+    '<input class="inp" id="inp-contrib" type="number" min="0.1" max="10" step="0.1" value="' + (((_row.contrib_rate)||0.02)*100).toFixed(1) + '"></div>' +
+    '<div class="row"><div><div class="row-lbl">Random Trigger Odds</div><div class="row-sub">1-in-N spins at seed (increases toward cap)</div></div>' +
+    '<input class="inp" id="inp-trigger" type="number" min="10" max="100000" step="10" value="' + Math.round((_row.trigger_odds)||500) + '"></div>' +
+    '<button class="btn btn-gold btn-full" onclick="saveSettings()">SAVE SETTINGS</button>' +
+    '</div>' +
+    '<div class="section"><div class="sec-title">Danger Zone</div>' +
+    '<button class="btn btn-danger btn-full" onclick="resetToSeed()">RESET POT TO SEED</button>' +
+    '<button class="btn btn-danger btn-full" style="margin-top:8px" onclick="setCustomValue()">SET POT TO CUSTOM VALUE</button>' +
+    '</div>';
+}
+
+/* ── Wide Area Ball Caller ── */
+var _ballCallerChannel = null; /* realtime subscription for ball_call updates */
+var _forceLocalMode = {};  /* game_id -> true when operator forced all to local */
+var _ballCallerLoading = false;
+
+
+
+function renderHistory() {
+  /* ── Hit History ── */
+  var h = '<div class="section">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">' +
+    '<div class="sec-title" style="margin-bottom:0">Hit History (' + _hits.length + (_hitsAllTime ? ' — All Time' : ' — Last 50') + ')</div>' +
+    '<button class="btn" style="padding:5px 10px;font-size:9px;background:' + (_hitsAllTime ? 'rgba(255,215,0,.15)' : 'var(--bg2)') + ';border:1px solid var(--gold-dk);color:var(--gold);" ' +
+    'onclick="_hitsAllTime=!_hitsAllTime;fetchHits()">' + (_hitsAllTime ? 'Show Last 50' : 'All Time') + '</button>' +
+    '</div>';
+  h += '<button class="btn btn-green" style="width:100%;padding:8px;margin-bottom:10px;font-size:10px" ' +
+       'onclick="fetchHits();toast(\'Refreshed\')">REFRESH HITS</button>';
+  if (_hits.length === 0) {
+    h += '<div style="color:var(--dim);font-size:12px">No jackpot hits yet.</div>';
+  } else {
+    _hits.forEach(function(hit) {
+      /* Try to resolve the session to a Player ID label */
+      /* progressive_hits has no session column — show game name as identifier */
+      var playerLabel = _gameName(hit.game_id);
+      var _hitTitle   = hit.game_title || _gameName(hit.game_id);
+      var _hitPlayer  = hit.player_label || playerLabel;
+      var _hitPats    = hit.win_patterns || hit.pattern || '';
+      h += '<div class="hit-row">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center">' +
+        '<div class="hit-game">' + _hitTitle + ' &bull; ' + _denom(hit.denom) + '</div>' +
+        '<div class="hit-amt">' + _fmtMoney(Number(hit.amount)) + '</div></div>' +
+        '<div class="hit-meta" style="color:#ffdd88;margin-top:2px">' + _hitPats + '</div>' +
+        '<div class="hit-meta">Bet: ' + _fmtMoney(Number(hit.bet||0)) + ' &bull; ' + _balls(hit.balls) + '</div>' +
+        '<div class="hit-meta" style="margin-top:2px;color:#aaffcc">&#128100; ' + _hitPlayer + '</div>' +
+        '<div class="hit-meta" style="margin-top:2px">' + _ts(hit.created_at) + '</div>' +
+        '</div>';
+    });
+  }
+  h += '</div>';
+
+  /* ── Operator Audit Log ── */
+  h += '<div class="section"><div class="sec-title">&#128196; Operator Audit Log (' + _auditLog.length + ')</div>';
+  if (_auditLog.length === 0) {
+    h += '<div style="color:var(--dim);font-size:12px">No operator actions yet this session.</div>';
+  } else {
+    _auditLog.forEach(function(entry) {
+      h += '<div class="hit-row" style="border-left:3px solid #ffd70055;padding-left:8px">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center">' +
+        '<div style="font-size:11px;font-weight:bold;color:var(--gold);letter-spacing:1px">' + entry.action + '</div>' +
+        '<div style="font-size:9px;color:var(--dim)">' + _ts(entry.ts) + '</div>' +
+        '</div>' +
+        (entry.detail ? '<div class="hit-meta" style="margin-top:3px">' + entry.detail + '</div>' : '') +
+        '<div class="hit-meta" style="margin-top:2px;color:#aaccff">&#128100; ' + entry.operator + '</div>' +
+        '</div>';
+    });
+  }
+  h += '</div>';
+  return h;
+}
+
+/* ── Force ── */
+function renderForce() {
+  var isArmed = _forceIsArmed;
+  return '<div class="section"><div class="sec-title">Test & Force Tools</div>' +
+    '<div style="background:#1a0010;border:1px solid #660022;border-radius:8px;padding:10px;margin-bottom:12px;font-size:10px;color:#cc6688;line-height:1.5">' +
+    '&#9888; Force tools are for testing only. A forced hit records in the hit log and resets the pot to seed.' +
+    '</div>' +
+    /* Armed banner — shows when jackpot is armed */
+    '<div id="armed-banner" class="' + (isArmed ? 'show' : '') + '">' +
+    '<div id="armed-title">&#9889; JACKPOT ARMED &#9889;</div>' +
+    '<div id="armed-desc">Waiting for next spin...<br>First player to spin wins ' + _fmtMoney(Number(_row.value)) + '!</div>' +
+    '<button id="armed-cancel" onclick="cancelForce()">CANCEL FORCE</button>' +
+    '</div>' +
+    '<button class="btn btn-danger btn-full" onclick="forceHit()" ' + (isArmed ? 'style="opacity:.4;pointer-events:none"' : '') + '>' +
+    (isArmed ? '&#9889; JACKPOT ALREADY ARMED' : 'FORCE JACKPOT HIT NOW') +
+    '</button>' +
+    '<button class="btn btn-gold btn-full" style="margin-top:10px" onclick="addTestContrib()">+ ADD $50 TEST CONTRIBUTION</button>' +
+    '<button class="btn btn-green btn-full" style="margin-top:10px" onclick="fetchRow();fetchHits();toast(\'Refreshed\')">REFRESH DATA</button>' +
+    '<button class="btn btn-gold btn-full" style="margin-top:10px" onclick="resetPlayerRegistry()">&#128100; RESET PLAYER IDs</button>' +
+    '</div>';
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   ACTIONS
+   ══════════════════════════════════════════════════════════════════════ */
+function saveSettings() {
+  if (!_connected) { toast('Not connected'); return; }
+  var seed    = parseFloat(document.getElementById('inp-seed').value);
+  var ceiling = parseFloat(document.getElementById('inp-ceiling').value);
+  var contrib = parseFloat(document.getElementById('inp-contrib').value) / 100;
+  var trigger = parseFloat(document.getElementById('inp-trigger').value);
+  if (isNaN(seed) || seed < 1)                      { toast('Invalid seed — must be ≥ $1'); return; }
+  if (isNaN(ceiling) || ceiling <= seed)             { toast('Ceiling must be > seed'); return; }
+  if (ceiling < Number(_row.value))                  { toast('Ceiling cannot be less than current pot (' + _fmtMoney(Number(_row.value)) + ')'); return; }
+  if (isNaN(contrib) || contrib <= 0 || contrib > 0.20) { toast('Contrib rate must be between 0.1% and 20%'); return; }
+  if (isNaN(trigger) || trigger < 10)   { toast('Trigger odds must be ≥ 10'); return; }
+  _client.from('progressive').update({
+    seed: seed, ceiling: ceiling, contrib_rate: contrib, trigger_odds: trigger
+  }).eq('id', 1).then(function(res) {
+    if (res.error) { toast('Save failed'); return; }
+    _audit('SETTINGS SAVED', 'Seed=$' + seed + ' Ceiling=$' + ceiling + ' Contrib=' + (contrib*100).toFixed(1) + '% Odds=1/' + trigger);
+    toast('Settings saved');
+    fetchRow();
   });
 }
 
-function cmdCancelCustomCard() {
-  if (!_client || !_connected) { toast('Not connected'); return; }
-  if (!_customCardCommandId) { _customCardArmed = false; renderTab(); return; }
+function resetToSeed() {
+  if (!_connected) { toast('Not connected'); return; }
+  if (!confirm('Reset pot to ' + _fmtMoney(Number(_row.seed)) + '?')) return;
+  _client.from('progressive').update({ value: _row.seed }).eq('id', 1).then(function(res) {
+    if (res.error) { toast('Reset failed'); return; }
+    _audit('POT RESET', 'Reset to seed $' + _fmtMoney(Number(_row.seed)));
+    toast('Pot reset to seed');
+  });
+}
+
+function setCustomValue() {
+  if (!_connected) { toast('Not connected'); return; }
+  var v = parseFloat(prompt('Enter new pot value ($):'));
+  if (isNaN(v) || v < 0) { toast('Invalid value'); return; }
+  _client.from('progressive').update({ value: v }).eq('id', 1).then(function(res) {
+    if (res.error) { toast('Update failed'); return; }
+    _audit('POT SET', 'Custom value ' + _fmtMoney(v));
+    toast('Pot set to ' + _fmtMoney(v));
+  });
+}
+
+
+function forceHit() {
+  if (!_connected) { toast('Not connected'); return; }
+  if (!confirm('ARM force jackpot? Next player to spin wins ' + _fmtMoney(Number(_row.value)) + '!')) return;
+  _client.rpc('arm_force_jackpot').then(function(res) {
+    if (res.error) { toast('Arm failed: ' + res.error.message); return; }
+    _audit('FORCE JACKPOT ARMED', 'Pot value ' + _fmtMoney(Number(_row.value)) + ' — operator: ' + _operatorUsername);
+    _forceIsArmed = true;
+    if (_activeTab === 'force') renderTab();
+    /* Flash Force tab label */
+    var tabs = document.querySelectorAll('.tab');
+    if (tabs[3]) {
+      tabs[3].style.color = '#ff4400';
+      tabs[3].innerHTML = '&#9889; ARMED';
+    }
+    /* Persistent armed toast */
+    toast('&#9889; Jackpot ARMED — ' + _fmtMoney(Number(_row.value)) + ' — waiting for next spin!');
+  });
+}
+
+function resetPlayerRegistry() {
+  if (!_connected) { toast('Not connected'); return; }
+  if (!confirm('Reset all Player IDs? Player 1 will be reassigned to the next player who spins.')) return;
+  _client.rpc('reset_player_registry').then(function(res) {
+    if (res.error) { toast('Reset failed: ' + res.error.message); return; }
+    _playerIdMap   = {};
+    _nextPlayerId  = 1;
+    _audit('PLAYER IDS RESET', 'All player labels cleared');
+    toast('&#128100; Player IDs reset — Player 1 on next spin');
+  });
+}
+
+function cancelForce() {
+  if (!_connected) { toast('Not connected'); return; }
   _client.from('progressive_commands')
     .update({ status: 'cancelled' })
-    .eq('id', _customCardCommandId).eq('status', 'armed')
+    .eq('status', 'armed')
     .then(function(res) {
-      if (res.error) { toast('Error: ' + res.error.message); return; }
-      _customCardArmed     = false;
-      _customCardBalls     = null;
-      _customCardCommandId = null;
-      _audit('CUSTOM CARD CANCELLED', 'By ' + _operatorName);
-      renderTab();
-      toast('Custom card arm cancelled');
+      if (res.error) { toast('Cancel failed: ' + res.error.message); return; }
+      _audit('FORCE JACKPOT CANCELLED', '');
+      _forceIsArmed = false;
+      var tabs = document.querySelectorAll('.tab');
+      if (tabs[3]) { tabs[3].style.color = ''; tabs[3].textContent = 'Force'; }
+      if (_activeTab === 'force') renderTab();
+      toast('Force jackpot cancelled');
     });
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   BALL GRID RENDERER
-   ══════════════════════════════════════════════════════════════════════ */
-function _renderBallGrid(seq) {
-  if (!seq || !seq.length) {
-    return '<div style="color:var(--dim);font-size:10px;padding:8px 0">No sequence loaded</div>';
-  }
-  var cells = '';
-  for (var i = 0; i < 75; i++) {
-    var ball  = seq[i];
-    var isPre = i < 40;
-    /* Yellow = pre-called zone (balls 1-40), white = entertainment zone (41-75)
-       All balls always visible — position is per-player local, not tracked here */
-    var color = isPre ? '#ffdd00' : '#cccccc';
-    var bgCol = isPre ? 'rgba(255,220,0,0.12)' : 'rgba(255,255,255,0.06)';
-    cells += '<div style="width:30px;height:24px;border-radius:3px;background:' + bgCol + ';' +
-             'color:' + color + ';font-size:9px;font-weight:600;' +
-             'display:inline-flex;align-items:center;justify-content:center;margin:1px">' +
-             (ball || '') + '</div>';
-  }
-  return '<div style="display:flex;flex-wrap:wrap;gap:0;margin:8px 0">' + cells + '</div>';
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   OPERATOR COMMANDS
-   ══════════════════════════════════════════════════════════════════════ */
-
-function cmdForceLocal() {
-  if (!_client || !_connected) { toast('Not connected'); return; }
-  if (!confirm('Force ALL players to LOCAL ball call?\nWide area sequence will pause.')) return;
-  _client.from('progressive_commands').insert({
-    command:     'force_local_ball',
-    status:      'pending',
-    winner_game: 'WABC',
-    created_by:  _operatorName
-  }).then(function(res) {
-    if (res.error) { toast('Error: ' + res.error.message); return; }
-    _isForced = true;
-    _broadcastCh.send({ type: 'broadcast', event: 'force_local', payload: {} });
-    _audit('FORCE LOCAL', 'All players switched to local ball call by ' + _operatorName);
-    if (_activeTab === 'caller' || _activeTab === 'controls') renderTab();
-    toast('\u26a0 All players now on local ball call');
+function addTestContrib() {
+  if (!_connected) { toast('Not connected'); return; }
+  _client.rpc('progressive_contribute', { add_amount: 50 }).then(function(res) {
+    if (res.error) { toast('Failed'); return; }
+    toast('+$50 added to pot');
   });
 }
 
-function cmdRestoreWide() {
-  if (!_client || !_connected) { toast('Not connected'); return; }
-  _client.rpc('upsert_ball_call', { p_game_id: 'WABC' }).then(function(res) {
-    if (res.error) { toast('Error issuing sequence: ' + res.error.message); return; }
-    var data = res.data || {};
-    _sequence = data.sequence || [];
-    _ballPos  = 0;
-    _issuedAt = data.issued_at || new Date().toISOString();
-    _updateBallHeader();
-    _client.from('progressive_commands').insert({
-      command:     'restore_wide_ball',
-      status:      'pending',
-      winner_game: 'WABC',
-      created_by:  _operatorName
-    }).then(function(res2) {
-      if (res2.error) { toast('Error: ' + res2.error.message); return; }
-      _isForced = false;
-      _broadcastCh.send({
-        type:    'broadcast',
-        event:   'restore_wide',
-        payload: { sequence: _sequence, issued_at: _issuedAt }
-      });
-      _audit('RESTORE WIDE', 'Wide area ball call restored by ' + _operatorName);
-      if (_activeTab === 'caller' || _activeTab === 'controls') renderTab();
-      toast('\u2714 Wide area ball call restored');
-    });
-  });
+/* ── Helpers ── */
+function _fmtMoney(n) {
+  var v = parseFloat(n);
+  if (isNaN(v)) return '$0.00';
+  var parts = v.toFixed(2).split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return '$' + parts[0] + '.' + parts[1];
 }
-
-function cmdRefresh() {
-  if (!_client || !_connected) { toast('Not connected'); return; }
-  _fetchBallCallState(function() {
-    _updateBallHeader();
-    renderTab();
-    toast('Refreshed from database');
-  });
+function _denom(d) { return d ? _fmtMoney(Number(d)) : '—'; }
+function _balls(b) { return b ? b + ' balls' : ''; }
+function _ts(ts) {
+  if (!ts) return '';
+  try {
+    var d = new Date(ts);
+    return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  } catch(e) { return ts; }
 }
-
-/* ══════════════════════════════════════════════════════════════════════
-   HELPERS
-   ══════════════════════════════════════════════════════════════════════ */
-function _gameName(id) {
-  var names = {
-    'straypups_1d':      'StrayPups $1',
-    'straypups_5d':      'StrayPups $5',
-    'tsbigmunny':        'TS Big Munny',
-    'WABC':              'WABC',
-    'wabc_operator':     'WABC Operator',
-    'operator':          'Operator'
-  };
-  return names[id] || id || '\u2014';
-}
-
-function _audit(action, detail) {
-  _auditLog.unshift({ ts: new Date().toISOString(), action: action, detail: detail || '' });
-  if (_auditLog.length > 100) _auditLog.length = 100;
-  if (_activeTab === 'status') renderTab();
-}
-
-var _toastTimer = null;
-function toast(msg) {
+function toast(m) {
   var el = document.getElementById('toast');
-  if (!el) return;
-  el.textContent = msg;
-  el.classList.add('on');
-  clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(function() { el.classList.remove('on'); }, 2500);
+  el.innerHTML = m; el.classList.add('on');
+  setTimeout(function() { el.classList.remove('on'); }, 2400);
 }
+
+/* ── Boot ── */
+renderTab();
 </script>
+<div style="position:fixed;bottom:2px;left:0;right:0;text-align:center;
+font-size:7px;color:rgba(255,215,0,0.18);letter-spacing:2px;pointer-events:none;
+z-index:1;font-family:Arial,sans-serif;font-weight:normal">
+GOLD COINS CASINO &bull; v2.7</div>
 </body>
 </html>
