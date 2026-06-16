@@ -1,7 +1,7 @@
 {
-  "name": "Progressive Operator",
-  "short_name": "Prog Op",
-  "description": "Stray-Pup LLC Gold Coins Casino Progressive Controller",
+  "name": "WABC Master",
+  "short_name": "WABC",
+  "description": "Stray-Pup LLC Gold Coins Casino Wide Area Ball Call Master",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",

@@ -180,3 +180,40 @@ Cache bust: prog-op-v3.20
   (v8.2.2) -- kept in sync manually per the existing comment at this map's
   definition.
 - No other changes. Cache bust: v3.21.
+
+
+### v1.22 — EMERGENCY: WABC Master Identity + Cache Fix
+
+**ROOT CAUSES FOUND:**
+1. PHASE_PLAN.md was a verbatim copy of Progressive Operator's — WABC had no
+   own phase history documented at all.
+2. `service-worker.js` CACHE_VER was `prog-op-v3.20` (copied from Progressive
+   Operator, never updated for WABC).
+3. `service-worker.js` CACHE_URLS listed `./progressive.js` — this file does
+   NOT exist in the WABC repo. Atomic `cache.addAll()` failure.
+4. `<title>` said "Progressive Operator" — wrong.
+5. `manifest.json` said "Progressive Operator" — wrong.
+
+**Fixes applied:**
+- CACHE_VER: `wabc-v1.22`
+- CACHE_URLS: removed `./progressive.js`, added `./wabc.js`
+- `<title>`: updated to "WABC Master"
+- `#splash-ver`: updated to `v1.22`
+- `manifest.json`: name/short_name/description updated to WABC Master
+
+**TODO:** WABC PHASE_PLAN needs to be properly written from scratch with its
+actual version history. Current entries are Progressive Operator's history —
+inaccurate. Flag for next session.
+
+- Cache bust: wabc-v1.22
+
+
+### v1.23 — PIN Hash Wrong
+
+**ROOT CAUSE:** `PROG_OP_PIN_HASH` stored value ended in `'...c2'` (1 digit)
+but `_hashOpPin('7777')` returns `'...c25'` (2 digits, padStart(2,'0')).
+The stored hash was truncated — `7777` never matched.
+**Fix:** Corrected stored hash to `'...c25'`.
+Pin `7777` now works.
+
+- Cache bust: wabc-v1.23
