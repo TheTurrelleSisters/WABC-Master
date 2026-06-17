@@ -96,10 +96,20 @@ var WABC = (function() {
           _sequence  = res.data.sequence  || [];
           _ballPos   = res.data.ball_pos  || 0;
           _issuedAt  = res.data.issued_at || null;
+        } else if (res.error && res.error.code === 'PGRST116') {
+          /* No WABC row yet — first run. Sequence is empty; game will use local
+             fallback until operator issues a new call from the WABC tool. */
+          console.warn('[WABC] No ball_call row found for game_id=WABC. ' +
+            'Open the WABC operator tool and issue a new ball call to initialize.');
+          _sequence = [];
+          _ballPos  = 0;
+          _issuedAt = null;
+          _uninitializedWarned = true;
         }
         if (cb) cb();
       });
   }
+  var _uninitializedWarned = false;
 
   /* ── BROADCAST SUBSCRIBE ── */
   function _subscribe() {
@@ -212,6 +222,8 @@ var WABC = (function() {
   function getBallPos()   { return _ballPos; }
   function getNextBall()  { return (_sequence && _ballPos < _sequence.length) ? _sequence[_ballPos] : null; }
   function isLocalMode()  { return _localMode; }
+  function getIssuedAt()  { return _issuedAt; }
+  function isInitialized(){ return _sequence.length > 0; }
 
   function onChange(fn)        { _changeListeners.push(fn); }
   function onNewCall(fn)       { _newCallListeners.push(fn); }
@@ -223,7 +235,9 @@ var WABC = (function() {
     getSequence:   getSequence,
     getBallPos:    getBallPos,
     getNextBall:   getNextBall,
+    getIssuedAt:   getIssuedAt,
     isLocalMode:   isLocalMode,
+    isInitialized: isInitialized,
     onChange:      onChange,
     onNewCall:     onNewCall,
     onForceLocal:  onForceLocal,

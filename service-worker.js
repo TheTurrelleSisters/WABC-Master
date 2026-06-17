@@ -1,15 +1,11 @@
 /*
- * service-worker.js — Progressive Operator
- * Gold Coins Casino System v2.6
- * AUTO-UPDATE: Detects new version, clears old cache, reloads all clients silently.
- * Bump CACHE_VER on every release — everything else is automatic.
+ * service-worker.js — WABC Wide Area Ball Caller
+ * Gold Coins Casino System v1.0
+ * Bump CACHE_VER on every release.
  */
-var CACHE_VER = 'wabc-v1.23';
+var CACHE_VER  = 'wabc-v1.19';
+var CACHE_URLS = ['./index.html', './manifest.json'];
 
-/* Files to pre-cache on install */
-var CACHE_URLS = ['./index.html','./manifest.json','./wabc.js','./icons/icon-192x192.png','./icons/icon-512x512.png'];
-
-/* ── INSTALL: cache files + skip waiting immediately ── */
 self.addEventListener('install', function(e) {
   e.waitUntil(
     caches.open(CACHE_VER)
@@ -18,46 +14,32 @@ self.addEventListener('install', function(e) {
           console.warn('[SW] Pre-cache failed (non-fatal):', err);
         });
       })
-      .then(function() {
-        /* Skip waiting — activate immediately without waiting for old SW to die */
-        return self.skipWaiting();
-      })
+      .then(function() { return self.skipWaiting(); })
   );
 });
 
-/* ── ACTIVATE: nuke ALL old caches, claim all clients, force reload ── */
 self.addEventListener('activate', function(e) {
   e.waitUntil(
     caches.keys()
       .then(function(keys) {
-        return Promise.all(
-          keys.map(function(key) {
-            if (key !== CACHE_VER) {
-              console.log('[SW] Deleting stale cache:', key);
-              return caches.delete(key);
-            }
-          })
-        );
+        return Promise.all(keys.map(function(key) {
+          if (key !== CACHE_VER) {
+            console.log('[SW] Deleting stale cache:', key);
+            return caches.delete(key);
+          }
+        }));
       })
+      .then(function() { return self.clients.claim(); })
       .then(function() {
-        /* Claim all open tabs immediately */
-        return self.clients.claim();
-      })
-      .then(function() {
-        /* Tell all open clients to reload so they get fresh files */
         return self.clients.matchAll({ type: 'window' }).then(function(clients) {
           clients.forEach(function(client) {
-            if ('navigate' in client) {
-              /* Always navigate to our own index.html — never follow stale URLs */
-              client.navigate('./index.html');
-            }
+            if ('navigate' in client) client.navigate('./index.html');
           });
         });
       })
   );
 });
 
-/* ── FETCH: network-first for JS/HTML, cache-first for assets ── */
 self.addEventListener('fetch', function(e) {
   /* Never intercept non-GET requests (POST/PATCH/PUT/DELETE) — these are
      Supabase mutations (RPC calls, inserts, updates). cache.put() only
