@@ -521,6 +521,14 @@ function initSupabase() {
         document.getElementById('conn-badge').className = 'ok';
         document.getElementById('conn-badge').textContent = 'LIVE';
         setConnStatus('connected');
+        /* v-registry: pull the shared game list from Supabase before the
+           first render, so newly added games appear with no redeploy.
+           Falls back silently to the built-in map if the table is
+           unreachable. */
+        loadGameRegistry(_client, function(ok) {
+          console.log('[games] registry source:', ok ? 'supabase' : 'built-in fallback');
+          try { if (typeof renderTab === 'function') renderTab(); } catch(e) {}
+        });
         _subscribeBroadcast();
         _subscribePresence();
         startPlayerRegistryPolling();
@@ -1134,7 +1142,58 @@ function cmdRefresh() {
 /* ══════════════════════════════════════════════════════════════════════
    HELPERS
    ══════════════════════════════════════════════════════════════════════ */
+var GAMES = {};
+/* ══════════════════════════════════════════════════════════════════════
+   SHARED GAME REGISTRY — loaded from Supabase `games` + `game_aliases`.
+   Previously each operator tool kept its own hardcoded list. All three had
+   drifted apart and every one was incomplete: Floor Manager omitted
+   turrelle_big_munny_2 (the highest-volume game), Progressive Operator
+   omitted it and pokeher, and WABC used the id 'tsbigmunny' which never
+   matched the live 'turrelle'. Adding a game is now one DB row, not three
+   code edits. The hardcoded map below stays ONLY as an offline fallback.
+   ══════════════════════════════════════════════════════════════════════ */
+var GAME_ALIASES = { 'tsbigmunny': 'turrelle', 'maxines': 'maxine' };
+function _canonGame(id) { return GAME_ALIASES[id] || id; }
+
+function loadGameRegistry(client, done) {
+  if (!client) { if (done) done(false); return; }
+  client.from('games').select('*').order('sort_order', {ascending:true})
+    .then(function(r) {
+      if (r.error || !r.data || !r.data.length) {
+        console.warn('[games] falling back to built-in registry:',
+                     r.error ? r.error.message : 'empty');
+        if (done) done(false); return;
+      }
+      var next = {};
+      for (var i = 0; i < r.data.length; i++) {
+        var g = r.data[i];
+        if (g.active === false) continue;
+        next[g.game_id] = {
+          title: g.title, short: g.short_name, cls: g.game_class,
+          denom: parseFloat(g.denom) || 1, color: g.color || '#888',
+          sort: g.sort_order
+        };
+      }
+      GAMES = next;
+      console.log('[games] registry loaded from Supabase:',
+                  Object.keys(GAMES).length + ' games');
+      return client.from('game_aliases').select('alias,game_id');
+    })
+    .then(function(r) {
+      if (r && !r.error && r.data) {
+        for (var i = 0; i < r.data.length; i++)
+          GAME_ALIASES[r.data[i].alias] = r.data[i].game_id;
+      }
+      if (done) done(true);
+    })
+    .catch(function(e) {
+      console.warn('[games] registry load failed, using fallback:', e && e.message);
+      if (done) done(false);
+    });
+}
 function _gameName(id) {
+  id = _canonGame(id);
+  if (GAMES[id] && GAMES[id].title) return GAMES[id].title;
   var names = {
     'straypups_1d':      'StrayPups $1',
     'straypups_5d':      'StrayPups $5',
